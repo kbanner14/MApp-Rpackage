@@ -1,24 +1,27 @@
-#' Plots the posterior distributions of a parameter of interest along with the
-#' model averaged posterior distribuiton for the same parameter.
-#' @param mcmc.list A list of simulated posterior distribuitons for all
-#'   partial regression coefficients for each model considered.
-#' @param weights A vector of posterior model weights for all models in the model
-#'   set.
+#' @title Model Averaged Poseriors Plot
+#' @description Compare posterior distributions of partial regression
+#'   coefficients from individual models considered to the posterior
+#'   distribuitons of the model graphically and compare poserior standard
+#'   deviations in tabular form.
+#' @param mcmc.list A list of posterior samples of partial regression
+#'   coefficients of interest for each model in the model set.
+#' @param weights A vector of posterior model weights for all models in the
+#'   model set.
 #' @param PIP A vector of posterior inclusion probabilities for all potential
 #'   covariates.
-#' @param plot.wind A vector of length 2 specifying the number of rows and columns
-#'   to partition the plotting window into.
+#' @param plot.wind A vector of length 2 specifying the number of rows and
+#'   columns to partition the plotting window into.
 #' @param max.display An integer specifying the number of models to display in
 #'   the plotting window.
 #' @param mod.names A vector specifying the names of the models. If left blank,
 #'   models will be named M_1, M_2,..., M_K, where M_1 will have the largest
 #'   posterior model probability and M_K has the smallest posterior model
 #'   probability.
-#' @param include.coef A vector specifying which partial regression
-#'   coefficients to display.
-#' @return A table of posterior standard deviations for the top \code{max.display}
-#'  individual models specified, along with the posterior standard deviation of
-#'  the model averaged parameter.
+#' @param include.coef A vector specifying which partial regression coefficients
+#'   to display.
+#' @return The \code{MApp} plot and a table of posterior standard deviations for
+#'   the top \code{max.display} individual models specified, along with the
+#'   posterior standard deviation of the model averaged parameter.
 MApp <- function(mcmc.list, weights, PIP, plot.wind, max.display = NULL,
                    mod.names = NULL, include.coef = NULL, ...) {
 
@@ -30,7 +33,8 @@ MApp <- function(mcmc.list, weights, PIP, plot.wind, max.display = NULL,
     num.draws <- dim(mcmc.list[[1]])[1]  # draws from each posterior beta vector
     var.names <- names(mcmc.list[[1]])
 
-    # Create a data frame for each coefficient estimate and track which model it came from
+    # Create a data frame for each coefficient estimate and track which model it
+    # came from
 
     coef.frames <- list(1:p)
 

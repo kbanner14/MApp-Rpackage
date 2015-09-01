@@ -1,12 +1,9 @@
-#' @title Compute analytical posterior variance covariance matrix of
-#'   partial regression coefficients
-#' @description Compute posterior variance covariance matrix
-#' for an individual
-#' regression model after model averaging.
-#' Posterior means are generated assuming
-#' model averaging with the \code{bms()} function,
-#' with a unit information prior (g = N) placed
-#' on the regression parameters.
+#' @title Compute analytical posterior variance covariance matrix of partial
+#'   regression coefficients
+#' @description Compute posterior variance covariance matrix for an individual
+#'   regression model after model averaging. Posterior means are generated
+#'   assuming model averaging with the \code{bms()} function, with a unit
+#'   information prior (g = N) placed on the regression parameters.
 #'
 #' @param lmObject An object of class \code{lm}
 #' @return The posterior variance for the individual \code{lm} object.
@@ -26,12 +23,10 @@ cov.fun <- function(lmObject) {
 
 #' @title Compute analytical posterior means
 #'
-#' @description Compute posterior means for an individual
-#' regression model after model averaging.
-#' Posterior means are generated assuming
-#' model averaging with the \code{bms()} function,
-#' with a unit information prior (g = N) placed
-#' on the regression parameters.
+#' @description Compute posterior means for an individual regression model after
+#'   model averaging. Posterior means are generated assuming model averaging
+#'   with the \code{bms()} function, with a unit information prior (g = N)
+#'   placed on the regression parameters.
 #'
 #' @param lmObject A lm object
 #' @return The posterior mean for the individual\code{lm} object.
@@ -42,19 +37,20 @@ mean.fun <- function(lmObject) {
     return(betas[-1])
 }
 
-#' @title Analytical posterior simulation function for partial regression coefficients
-#' @description Simulate draws from individual posterior distributions for
-#' all models in the model set. Posteriors are simulated assuming
-#' the unit information formulation  (g = N) of the g-prior was used in
-#' the model aeraging.
+#' @title Analytical posterior simulation function for partial regression
+#'   coefficients
+#' @description Simulate draws from individual posterior distributions for all
+#'   models in the model set. Posteriors are simulated assuming the unit
+#'   information formulation  (g = N) of the g-prior was used in the model
+#'   aeraging.
 #'
 #' @param input.mat A matrix defining the model set.
-#' @param Xmat The numeric p x n X matrix for the regression
-#'  using all p covariates.
+#' @param Xmat The numeric p x n X matrix for the regression using all p
+#'   covariates.
 #' @param Yvec The numeric vector of responses.
 #' @param num.sims The number of draws to simulate.
-#' @return A list of simulated posterior distribuitons for all
-#'   partial regression coefficients for each model considered.
+#' @return A list of simulated posterior distribuitons for all partial
+#'   regression coefficients for each model considered.
 sim.post.fun <- function(input.mat, Xmat, Yvec, num.sims) {
     # Function to simulate draws from MVt for individual model
     # posteriors, cov.fun and mean.fun must be loaded.
@@ -99,8 +95,8 @@ sim.post.fun <- function(input.mat, Xmat, Yvec, num.sims) {
 }
 
 #' @title Convert a list of posterior samples into a long data frame.
-#' @description This function will create a long data frame to be used as an input
-#'   in \code{MApost.fun}.
+#' @description This function will create a long data frame to be used as an
+#'   input in \code{MApost.fun}.
 vec.fun2 <- function(post.list, coef) {
     # Function to convert from wide to long format by model for each coef
 
@@ -118,14 +114,15 @@ vec.fun2 <- function(post.list, coef) {
 #' @title Create MA distribution using draws from individual models
 #'
 #' @description Sample from individual posteriors to generate an approximate
-#' model averaged posterior distribution according to the unit information prior.
+#'   model averaged posterior distribution according to the unit information
+#'   prior.
 #' @param post.dataframe A data frame in long format with posterior draws of a
-#'   parameter of interest from all models in the model set. \code{vec.fun2} will
-#'   convert a list of posterior samples into a long data frame.
+#'   parameter of interest from all models in the model set. \code{vec.fun2}
+#'   will convert a list of posterior samples into a long data frame.
 #' @param models An integer specifying the number of models in the model set
 #' @param weight A vector of posterior model weights of length \code{models}
-#' @param num.draws An integer specifying the number of draws from each posterior
-#'   vector.
+#' @param num.draws An integer specifying the number of draws from each
+#'   posterior vector.
 MApost.fun <- function(post.dataframe, models, weight, num.draws) {
 
     post.dataframe$Include <- (as.numeric(is.na(post.dataframe$Post.Vec)) - 1) * (-1)
