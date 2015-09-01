@@ -37,15 +37,15 @@ mean.fun <- function(lmObject) {
     return(betas[-1])
 }
 
-#' @title Analytical posterior simulation function for partial regression
-#'   coefficients
+#' @title Simulate draws from posterior distributions of partial regression
+#'   coefficients.
+#' @family MApp functions
 #' @description Simulate draws from individual posterior distributions for all
 #'   models in the model set. Posteriors are simulated assuming the unit
-#'   information formulation  (g = N) of the g-prior was used in the model
+#'   information formulation (g = N) of the g-prior was used in the model
 #'   aeraging.
-#'
 #' @param input.mat A matrix defining the model set.
-#' @param Xmat The numeric p x n X matrix for the regression using all p
+#' @param Xmat The numeric p by n X matrix for the regression using all p
 #'   covariates.
 #' @param Yvec The numeric vector of responses.
 #' @param num.sims The number of draws to simulate.
@@ -96,7 +96,7 @@ sim.post.fun <- function(input.mat, Xmat, Yvec, num.sims) {
 
 #' @title Convert a list of posterior samples into a long data frame.
 #' @description This function will create a long data frame to be used as an
-#'   input in \code{MApost.fun}.
+#'   input in \code{\link{MApost.fun}}.
 vec.fun2 <- function(post.list, coef) {
     # Function to convert from wide to long format by model for each coef
 
@@ -117,8 +117,9 @@ vec.fun2 <- function(post.list, coef) {
 #'   model averaged posterior distribution according to the unit information
 #'   prior.
 #' @param post.dataframe A data frame in long format with posterior draws of a
-#'   parameter of interest from all models in the model set. \code{vec.fun2}
-#'   will convert a list of posterior samples into a long data frame.
+#'   parameter of interest from all models in the model set.
+#'   \code{\link{vec.fun2}} will convert a list of posterior samples into a long
+#'   data frame.
 #' @param models An integer specifying the number of models in the model set
 #' @param weight A vector of posterior model weights of length \code{models}
 #' @param num.draws An integer specifying the number of draws from each

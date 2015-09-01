@@ -2,8 +2,8 @@
 % Please edit documentation in R/individ_post_fun.R
 \name{cov.fun}
 \alias{cov.fun}
-\title{Compute analytical posterior variance covariance matrix of
-  partial regression coefficients}
+\title{Compute analytical posterior variance covariance matrix of partial
+  regression coefficients}
 \usage{
 cov.fun(lmObject)
 }
@@ -14,12 +14,9 @@ cov.fun(lmObject)
 The posterior variance for the individual \code{lm} object.
 }
 \description{
-Compute posterior variance covariance matrix
-for an individual
-regression model after model averaging.
-Posterior means are generated assuming
-model averaging with the \code{bms()} function,
-with a unit information prior (g = N) placed
-on the regression parameters.
+Compute posterior variance covariance matrix for an individual
+  regression model after model averaging. Posterior means are generated
+  assuming model averaging with the \code{bms()} function, with a unit
+  information prior (g = N) placed on the regression parameters.
 }
 

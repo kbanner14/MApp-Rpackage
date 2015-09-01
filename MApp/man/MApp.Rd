@@ -8,38 +8,38 @@ MApp(mcmc.list, weights, PIP, plot.wind, max.display = NULL,
   mod.names = NULL, include.coef = NULL, ...)
 }
 \arguments{
-\item{mcmc.list}{A list of posterior samples of partial regression coefficients
-of interest for each model in the model set.}
+\item{mcmc.list}{A list of posterior samples of partial regression
+coefficients of interest for each model in the model set.}
 
-\item{weights}{A vector of posterior model weights for all models in the model
-set.}
+\item{weights}{A vector of posterior model weights for all models in the
+model set.}
 
 \item{PIP}{A vector of posterior inclusion probabilities for all potential
 covariates.}
 
-\item{plot.wind}{A vector of length 2 specifying the number of rows and columns
-to partition the plotting window into.}
+\item{plot.wind}{A vector of length 2 specifying the number of rows and
+columns to partition the plotting window into.}
 
 \item{max.display}{An integer specifying the number of models to display in
 the plotting window.}
 
 \item{mod.names}{A vector specifying the names of the models. If left blank,
-models will be named M_1, M_2,..., M_K, where M_1 will have the largest
-posterior model probability and M_K has the smallest posterior model
-probability.}
+models will be named \eqn{M_1, M_2,..., M_K}, where \eqn{M_1} will have the
+largest posterior model probability and \eqn{M_K} has the smallest
+posterior model probability.}
 
-\item{include.coef}{A vector specifying which partial regression
-coefficients to display.}
+\item{include.coef}{A vector specifying which partial regression coefficients
+to display.}
 }
 \value{
-The \code{MApp} plot and a table of posterior standard deviations for the
-top \code{max.display} individual models specified, along with the posterior
- standard deviation of the model averaged parameter.
+The \code{MApp} plot and a table of posterior standard deviations for
+  the top \code{max.display} individual models specified, along with the
+  posterior standard deviation of the model averaged parameter.
 }
 \description{
 Compare posterior distributions of partial regression
- coefficients from individual models considered to the posterior distribuitons
- of the model graphically and compare poserior standard deviations in tabular
- form.
+  coefficients from individual models considered to the posterior
+  distribuitons of the model graphically and compare poserior standard
+  deviations in tabular form.
 }
 

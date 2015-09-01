@@ -7,7 +7,7 @@
 vec.fun2(post.list, coef)
 }
 \description{
-This function will create a long data frame to be used as an input
-  in \code{MApost.fun}.
+This function will create a long data frame to be used as an
+  input in \code{\link{MApost.fun}}.
 }
 

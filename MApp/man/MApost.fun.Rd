@@ -8,18 +8,20 @@ MApost.fun(post.dataframe, models, weight, num.draws)
 }
 \arguments{
 \item{post.dataframe}{A data frame in long format with posterior draws of a
-parameter of interest from all models in the model set. \code{vec.fun2} will
-convert a list of posterior samples into a long data frame.}
+parameter of interest from all models in the model set.
+\code{\link{vec.fun2}} will convert a list of posterior samples into a long
+data frame.}
 
 \item{models}{An integer specifying the number of models in the model set}
 
 \item{weight}{A vector of posterior model weights of length \code{models}}
 
-\item{num.draws}{An integer specifying the number of draws from each posterior
-vector.}
+\item{num.draws}{An integer specifying the number of draws from each
+posterior vector.}
 }
 \description{
 Sample from individual posteriors to generate an approximate
-model averaged posterior distribution according to the unit information prior.
+  model averaged posterior distribution according to the unit information
+  prior.
 }
 

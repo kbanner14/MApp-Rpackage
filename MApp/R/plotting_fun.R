@@ -14,9 +14,9 @@
 #' @param max.display An integer specifying the number of models to display in
 #'   the plotting window.
 #' @param mod.names A vector specifying the names of the models. If left blank,
-#'   models will be named M_1, M_2,..., M_K, where M_1 will have the largest
-#'   posterior model probability and M_K has the smallest posterior model
-#'   probability.
+#'   models will be named \eqn{M_1, M_2,..., M_K}, where \eqn{M_1} will have the
+#'   largest posterior model probability and \eqn{M_K} has the smallest
+#'   posterior model probability.
 #' @param include.coef A vector specifying which partial regression coefficients
 #'   to display.
 #' @return The \code{MApp} plot and a table of posterior standard deviations for

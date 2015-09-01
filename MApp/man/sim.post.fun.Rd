@@ -2,28 +2,29 @@
 % Please edit documentation in R/individ_post_fun.R
 \name{sim.post.fun}
 \alias{sim.post.fun}
-\title{Analytical posterior simulation function for partial regression coefficients}
+\title{Simulate draws from posterior distributions of partial regression
+  coefficients.}
 \usage{
 sim.post.fun(input.mat, Xmat, Yvec, num.sims)
 }
 \arguments{
 \item{input.mat}{A matrix defining the model set.}
 
-\item{Xmat}{The numeric p x n X matrix for the regression
-using all p covariates.}
+\item{Xmat}{The numeric p by n X matrix for the regression using all p
+covariates.}
 
 \item{Yvec}{The numeric vector of responses.}
 
 \item{num.sims}{The number of draws to simulate.}
 }
 \value{
-A list of simulated posterior distribuitons for all
-  partial regression coefficients for each model considered.
+A list of simulated posterior distribuitons for all partial
+  regression coefficients for each model considered.
 }
 \description{
-Simulate draws from individual posterior distributions for
-all models in the model set. Posteriors are simulated assuming
-the unit information formulation  (g = N) of the g-prior was used in
-the model aeraging.
+Simulate draws from individual posterior distributions for all
+  models in the model set. Posteriors are simulated assuming the unit
+  information formulation (g = N) of the g-prior was used in the model
+  aeraging.
 }
 
