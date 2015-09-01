@@ -2,15 +2,14 @@
 % Please edit documentation in R/plotting_fun.R
 \name{MApp}
 \alias{MApp}
-\title{Plots the posterior distributions of a parameter of interest along with the
-model averaged posterior distribuiton for the same parameter.}
+\title{Model Averaged Poseriors Plot}
 \usage{
 MApp(mcmc.list, weights, PIP, plot.wind, max.display = NULL,
   mod.names = NULL, include.coef = NULL, ...)
 }
 \arguments{
-\item{mcmc.list}{A list of simulated posterior distribuitons for all
-partial regression coefficients for each model considered.}
+\item{mcmc.list}{A list of posterior samples of partial regression coefficients
+of interest for each model in the model set.}
 
 \item{weights}{A vector of posterior model weights for all models in the model
 set.}
@@ -33,12 +32,14 @@ probability.}
 coefficients to display.}
 }
 \value{
-A table of posterior standard deviations for the top \code{max.display}
- individual models specified, along with the posterior standard deviation of
- the model averaged parameter.
+The \code{MApp} plot and a table of posterior standard deviations for the
+top \code{max.display} individual models specified, along with the posterior
+ standard deviation of the model averaged parameter.
 }
 \description{
-Plots the posterior distributions of a parameter of interest along with the
-model averaged posterior distribuiton for the same parameter.
+Compare posterior distributions of partial regression
+ coefficients from individual models considered to the posterior distribuitons
+ of the model graphically and compare poserior standard deviations in tabular
+ form.
 }
 
