@@ -1,0 +1,20 @@
+Package: MApp
+Title: Model Averaged Posteriors Plot
+Version: 0.1
+Authors@R: person(given = "Katharine", family = "Banner",
+	     email = "katharine.banner@gmail.com",
+             role = c("aut", "cre"))
+Description: A summary plot for model averaging of partial regression coefficients
+  allowing the user to plot and compare posterior distributions of partial regression
+  coefficients from individual models and compare them to their resulting posterior
+  distribution of the model averaged coefficient. The plot displays all of the
+  relevant output from Bayesian model averaging. This function currently works
+  with output from the bms() function in the {bms} package.
+Depends: R (>= 3.1.2)
+License: MIT
+LazyData: true
+Imports:
+    LearnBayes (>= 2.15),
+    gdata (>= 2.16.1),
+    beanplot
+
