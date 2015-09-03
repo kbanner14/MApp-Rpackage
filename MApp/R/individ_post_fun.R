@@ -1,18 +1,22 @@
 #' @title Compute analytical posterior variance covariance matrix of partial
 #'   regression coefficients
 #' @description Compute posterior variance covariance matrix for an individual
-#'   regression model after model averaging. Posterior means are generated
-#'   assuming model averaging with the \code{bms()} function, with a unit
-#'   information prior (g = N) placed on the regression parameters.
+#'   regression model after model averaging. Posterior variance-covariance
+#'   matricies are generated assuming model averaging with Zellner's
+#'   \eqn{g}-prior [add citation here]. If no value of \eqn{g} is specified, the
+#'   unit information prior (g = N) is assumed. placed on the regression
+#'   parameters.
 #'
 #' @param lmObject An object of class \code{lm}
 #' @return The posterior variance for the individual \code{lm} object.
-cov.fun <- function(lmObject) {
+cov.fun <- function(lmObject, g = NULL) {
   R2 <- summary(lmObject)$r.squared
   X <- model.matrix(lmObject)
   N <- dim(lmObject$model)[1]
+  if(is.null(g))
+    g <- N
   y <- as.matrix(lmObject$model[, 1])
-  shrink <- N/(N + 1)
+  shrink <- g
   ybar <- mean(y)
   ymybar <- y - ybar
   constant <- as.numeric((t(ymybar) %*% (ymybar)/(N - 3)) * shrink * (1 - (shrink * R2)))
@@ -25,12 +29,15 @@ cov.fun <- function(lmObject) {
 #'
 #' @description Compute posterior means for an individual regression model after
 #'   model averaging. Posterior means are generated assuming model averaging
-#'   with the \code{bms()} function, with a unit information prior (g = N)
-#'   placed on the regression parameters.
+#'   with Zellner's \eqn{g}-prior [add citation here]. If no value of \eqn{g} is
+#'   specified, the unit information prior (g = N) is assumed. placed on the
+#'   regression parameters.
 #'
 #' @param lmObject A lm object
 #' @return The posterior mean for the individual\code{lm} object.
-mean.fun <- function(lmObject) {
+mean.fun <- function(lmObject, g = NULL){
+    if(is.null(g))
+      g <- N
     N <- dim(lmObject$model)[1]
     shrink <- N/(N + 1)
     betas <- shrink * coef(lmObject)

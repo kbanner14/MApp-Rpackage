@@ -1,15 +1,9 @@
-#' @title Model Averaged Poseriors Plot
+#' @title Model Averaged Poseriors Plot for bms objects
 #' @description Compare posterior distributions of partial regression
 #'   coefficients from individual models considered to the posterior
 #'   distribuitons of the model graphically and compare poserior standard
 #'   deviations in tabular form.
-#' @param mcmc.list A list of posterior samples of partial regression
-#'   coefficients of interest for each model in the model set.
-#' @param g A numeric value specifying the value of thehyperparameter, \eqn{g}.
-#' @param weights A vector of posterior model weights for all models in the
-#'   model set.
-#' @param PIP A vector of posterior inclusion probabilities for all potential
-#'   covariates.
+#' @param x an object of class \code{bms} where
 #' @param plot.wind A vector of length 2 specifying the number of rows and
 #'   columns to partition the plotting window into.
 #' @param max.display An integer specifying the number of models to display in
@@ -20,30 +14,52 @@
 #'   posterior model probability.
 #' @param include.coef A vector specifying which partial regression coefficients
 #'   to display.
-#' @return The \code{MApp} plot and a table of posterior standard deviations for
+#' @return The \code{MApp.bms} plot and a table of posterior standard deviations for
 #'   the top \code{max.display} individual models specified, along with the
 #'   posterior standard deviation of the model averaged parameter.
-MApp <- function(mcmc.list, g, weights, PIP, plot.wind, max.display = NULL,
-                   mod.names = NULL, include.coef = NULL, ...) {
+MApp.bms <- function(x, plot.wind, num.sims = 1000, max.display = NULL,
+                       mod.names = NULL,
+    include.coef = NULL, ...) {
 
+  # extract what we need from the bms object
+  results <- data.frame(coef(x))
+	PIP <- results[order(results$Idx), ][, 1]
+	X.data <- x$X.data
+	weights <- sort(pmp.bma(x)[,1], decreasing = T)
+	weights <- weights[-length(weights)]
+  g <- x$gprior.info$g
+
+	# Create input matrix to work in simulation function. Rows ordered w.r.t
+	# posterior model probability
+	post.means <- x$topmod$betas()
+	idx <- which(apply(post.means, 2, sum) != 0)
+	inmat <- post.means[,c(idx)]
+	inmat[inmat != 0] <- 1
+	inmat <- t(inmat)
+
+	# simulate posterior draws
+	mcmc.list <- sim.post.fun(inmat, X.data[-1], X.data[, 1], num.sims)
+
+    # number of models considered
     K <- length(mcmc.list)
     p <- dim(mcmc.list[[1]])[2]  # Number of parameters
     if (is.null(mod.names))
         mod.names <- paste("M", seq(1:K), sep = "")
     names(mcmc.list) <- paste("M", seq(1:K), sep = "")  # Create names for models
-    num.draws <- dim(mcmc.list[[1]])[1]  # draws from each posterior beta vector
+    num.draws <- dim(mcmc.list[[1]])[1]  # Number of draws from each posterior beta vector
     var.names <- names(mcmc.list[[1]])
 
-    # Create a data frame for each coefficient estimate and track which model it
-    # came from
+    # Create a data frame for each coefficient estimate and track which model it came from
 
     coef.frames <- list(1:p)
 
     for (i in 1:p) {
         coef.frames[[i]] <- vec.fun2(mcmc.list, i)
-        coef.frames[[i]] <- data.frame(coef.frames[[i]], rep(mod.names, each = num.draws))
+        coef.frames[[i]] <- data.frame(coef.frames[[i]],
+        					            rep(mod.names, each = num.draws))
         names(coef.frames[[i]]) <- c("Post.Vec", "Model")
-        coef.frames[[i]]$Model <- gdata::reorder(coef.frames[[i]]$Model, new.order = mod.names)
+        coef.frames[[i]]$Model <- gdata::reorder.factor(coef.frames[[i]]$Model,
+                                                   new.order = mod.names)
     }
 
     for (i in 1:p) {
@@ -131,7 +147,8 @@ MApp <- function(mcmc.list, g, weights, PIP, plot.wind, max.display = NULL,
     for (i in include.coef) {
 
         # Initilize plot
-        allplot <- beanplot::beanplot(Post.Vec ~ Model, names = levels(coef.frames[[i]]$Model),
+        allplot <- beanplot::beanplot(Post.Vec ~ Model,
+        					  names = levels(coef.frames[[i]]$Model),
         				      data = coef.frames[[i]],
         					  what = c(0, 0, 0, 0),
         					  border = 1,
@@ -141,7 +158,8 @@ MApp <- function(mcmc.list, g, weights, PIP, plot.wind, max.display = NULL,
         									 horizontal = T)
 
         # Add top model beans
-        beanplot::beanplot(Post.Vec ~ Model, side = "second", show.names = F,
+        beanplot::beanplot(Post.Vec ~ Model, side = "second",
+        		  show.names = F,
         		  data = coef.frames[[i]],
         		  add = T,
         		  subset = Model != "MA",
@@ -156,15 +174,16 @@ MApp <- function(mcmc.list, g, weights, PIP, plot.wind, max.display = NULL,
         segments(MA.mean, 1, MA.mean, (max.display + 1.35), col = "black", lty = 4)
 
         # Add MA bean
-        beanplot::beanplot(Post.Vec ~ Model, side = "second", show.names = F,
-        		   data = coef.frames[[i]],
-        		   add = T,
-        		   subset = Model == "MA",
-        		   what = c(0, 1, 1, 1),
-        	       border = 1,
-        		   ll = 0.12,
-            	   horizontal = T,
-                   col = c("black", "gray", "red", "darkgrey"))
+        beanplot::beanplot(Post.Vec ~ Model, side = "second",
+        		   			show.names = F,
+        		   			data = coef.frames[[i]],
+        		   			add = T,
+        		   			subset = Model == "MA",
+        		   			what = c(0, 1, 1, 1),
+        	       			border = 1,
+        		   			ll = 0.12,
+            	   			horizontal = T,
+                   			col = c("black", "gray", "red", "darkgrey"))
 
         # Add horizontal lines
         modLines <- seq(1:(max.display + 1))
@@ -208,3 +227,4 @@ MApp <- function(mcmc.list, g, weights, PIP, plot.wind, max.display = NULL,
 
     return(SD)
 }
+
