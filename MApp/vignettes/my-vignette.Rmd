@@ -9,7 +9,42 @@ vignette: >
   %\usepackage[utf8]{inputenc}
 ---
 
-The `MApp` plotting funciton will work with objects of the class list, and the `MApp.bms` plotting funciton will work with objects of class `bms`. A quick introduction to Bayesian model averaging can be found in the `bms` package vignette (`vignette("bms")`) and a detailed discussion about why the `MApp` plot provides a useful summary of the results obtained by model averaging partial regression coeffiicents see _Model Averaging Partial Regression Coefficients: Considerations and Practical Guidelines_, (Banner & Higgs, 2015). 
+The `MApp` plotting function works with lists of posterior draws and the `MApp.bms` plotting funciton works with `bma` objects. A quick introduction to Bayesian model averaging can be found in the `bms` package vignette (`vignette("bms")`) and a detailed discussion of the rational behind the `MApp` plot can be found in _Model Averaging Partial Regression Coefficients: Considerations and Practical Guidelines_, (Banner & Higgs, 2015). In brief, model averaging was developed as a predictive tool and its use has been recently extended to model averaging of partial regression coefficients across multiple models. The inference drawn from the latter application of model averaging typically results in explanations of "average effects" for each of the coefficients of interest. The main issue is that interpreting model averaged partial regression coefficients as "average effects" can very misleading since their interpretations are dependent on what else is in each individual model. Therefore, averaging over posteriors that have very different meanings to form an "avearage effect" often makes little sense. `MApp` provides the user with a visual of how the model averaged posterior distributions are constructed. We illustrate the utility of the plotting function as well as other useful functions with two examples.
+
+## Example 1
+
+We will use the `case0902` data from the `Sleuth2` package for this example. The data are comprised of average values for gestation length (days), litter size (number of offspring), body size (kg) and brain weight (g) for 96 species of mammals. We use the natural log transformation on average brain weight (_lbrain_), body size (_lbody_), and gestation length (_lgest_), as these relationships are approximately linear on the log-log scale. 
+
+```{r, brain, results='asis'}
+brainData <- Sleuth2::case0902
+
+# get the data in the proper format for use in BMS
+brainData <- brainData[, -c(1)]
+
+# make the appropriate variable transformations
+brainData$lbrain <- log(brainData$Brain)
+brainData$lbody <- log(brainData$Body)
+brainData$lgest <- log(brainData$Gestation)
+brainData$litter <- brainData$Litter
+
+# keep only the variables you need in the dataframe
+brainData <- brainData[, c(5:8)]
+
+knitr::kable(head(brainData, 10))
+```
+
+We can use the `bms` function from the `BMS` package to obtain a `bma` object: 
+
+```{r bmsobj}
+brain <- BMS::bms(brainData, g = "UIP", 
+                    mprior = "uniform", 
+                    user.int = F)
+class(brain)
+```
+
+`bms` places Zellner's $g$-prior on the coefficients and we specify a discrete uniform prior on the  $2^3 = $`r 2^3` models included in the "all-subsets" model set. 
+
+
 
 Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
 

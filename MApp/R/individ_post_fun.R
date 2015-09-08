@@ -9,18 +9,17 @@
 #'
 #' @param lmObject An object of class \code{lm}
 #' @return The posterior variance for the individual \code{lm} object.
-cov.fun <- function(lmObject, g = NULL) {
+cov.fun <- function(lmObject, g = NULL, ...) {
   R2 <- summary(lmObject)$r.squared
-  X <- model.matrix(lmObject)
+  XtXinv <- summary(lmObject)$cov.unscaled
   N <- dim(lmObject$model)[1]
   if(is.null(g))
     g <- N
+  shrink <- g/(1+g)
   y <- as.matrix(lmObject$model[, 1])
-  shrink <- g
   ybar <- mean(y)
   ymybar <- y - ybar
   constant <- as.numeric((t(ymybar) %*% (ymybar)/(N - 3)) * shrink * (1 - (shrink * R2)))
-  XtXinv <- solve(t(X) %*% X)
   cov <- constant * XtXinv
   return(cov[-1, -1])
 }
@@ -35,11 +34,11 @@ cov.fun <- function(lmObject, g = NULL) {
 #'
 #' @param lmObject A lm object
 #' @return The posterior mean for the individual\code{lm} object.
-mean.fun <- function(lmObject, g = NULL){
+mean.fun <- function(lmObject, g = NULL,...){
+    N <- dim(lmObject$model)[1]
     if(is.null(g))
       g <- N
-    N <- dim(lmObject$model)[1]
-    shrink <- N/(N + 1)
+    shrink <- g/(g + 1)
     betas <- shrink * coef(lmObject)
     return(betas[-1])
 }
@@ -61,13 +60,13 @@ mean.fun <- function(lmObject, g = NULL){
 sim.post.fun <- function(input.mat, Xmat, Yvec, num.sims) {
     # Function to simulate draws from MVt for individual model
     # posteriors, cov.fun and mean.fun must be loaded.
-    data <- data.frame(Yvec, Xmat)
+    all.dat <- data.frame(Yvec, Xmat)
     num.x <- dim(Xmat)[2]
     num.models <- dim(input.mat)[1]
     allMods <- as.list(1:(2 * num.models))
     posts <- as.list(1:num.models)
     names.posts <- rep(NA, num.models)
-    N <- dim(data)[1]
+    N <- dim(all.dat)[1]
     for (j in 1:num.models) {
         names.posts[j] <- paste("M", j, sep = "_")
     }
@@ -76,14 +75,14 @@ sim.post.fun <- function(input.mat, Xmat, Yvec, num.sims) {
         xs1 <- names(Xmat[which(input.mat[i, ] == 1)])
         xs <- paste(xs1, collapse = "+")
         form <- paste("Yvec ~", xs, sep = "")
-        fit <- lm(form, data = data)
+        fit <- lm(form, data = all.dat)
         allMods[[i + (num.models)]] <- cov.fun(fit)
         allMods[[i]] <- mean.fun(fit)
     }
 
     for (i in 1:num.models) {
-        posts[[i]] <- data.frame(matrix(rep(input.mat[i, ], num.sims), nrow = num.sims,
-            ncol = num.x, byrow = T))
+        posts[[i]] <- data.frame(matrix(rep(input.mat[i, ], num.sims),
+                                        nrow = num.sims, ncol = num.x, byrow = T))
         names(posts[[i]]) <- names(Xmat)
         posts[[i]][posts[[i]] == 0] <- NA
         if (length(allMods[[(i + num.models)]]) == 1) {

@@ -18,13 +18,13 @@
 #'   the top \code{max.display} individual models specified, along with the
 #'   posterior standard deviation of the model averaged parameter.
 MApp.bms <- function(x, plot.wind, num.sims = 1000, max.display = NULL,
-                       mod.names = NULL,
-    include.coef = NULL, ...) {
+                       mod.names = NULL, include.coef = NULL, ...) {
 
   # extract what we need from the bms object
   results <- data.frame(coef(x))
 	PIP <- results[order(results$Idx), ][, 1]
-	X.data <- x$X.data
+	Yvec <- x$X.data[,1]
+  Xmat <- x$X.data[,-1]
 	weights <- sort(pmp.bma(x)[,1], decreasing = T)
 	weights <- weights[-length(weights)]
   g <- x$gprior.info$g
