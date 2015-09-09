@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotting_fun.R
 \name{MApp}
 \alias{MApp}
-\title{Model Averaged Poseriors Plot}
+\title{Model Averaged Posteriors Plot}
 \usage{
 MApp(mcmc.list, g, weights, PIP, plot.wind, max.display = NULL,
   mod.names = NULL, include.coef = NULL, ...)
@@ -11,7 +11,7 @@ MApp(mcmc.list, g, weights, PIP, plot.wind, max.display = NULL,
 \item{mcmc.list}{A list of posterior samples of partial regression
 coefficients of interest for each model in the model set.}
 
-\item{g}{A numeric value specifying the value of thehyperparameter, \eqn{g}.}
+\item{g}{A numeric value specifying the value of the hyperparameter \eqn{g}.}
 
 \item{weights}{A vector of posterior model weights for all models in the
 model set.}
@@ -39,9 +39,14 @@ The \code{MApp} plot and a table of posterior standard deviations for
   posterior standard deviation of the model averaged parameter.
 }
 \description{
-Compare posterior distributions of partial regression
-  coefficients from individual models considered to the posterior
-  distribuitons of the model graphically and compare poserior standard
-  deviations in tabular form.
+Works with lists of posterior draws of partial regression
+  coefficients from multiple models. Creates a graphical display showing all
+  relevant output from the model averaging procedure. Used to graphically
+  compare posterior distributions of partial regression coefficients from
+  individual models in the model set to the posterior distributions resulting
+  from the model averaged partial regression coefficients. Also used to
+  compare posterior standard deviations of the continuous piece of the model
+  averaged distribution to corresponding standard deviations from individual
+  posterior distributions in tabular form.
 }
 

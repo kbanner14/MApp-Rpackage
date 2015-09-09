@@ -1,11 +1,16 @@
-#' @title Model Averaged Poseriors Plot
-#' @description Compare posterior distributions of partial regression
-#'   coefficients from individual models considered to the posterior
-#'   distribuitons of the model graphically and compare poserior standard
-#'   deviations in tabular form.
+#' @title Model Averaged Posteriors Plot
+#' @description Works with lists of posterior draws of partial regression
+#'   coefficients from multiple models. Creates a graphical display showing all
+#'   relevant output from the model averaging procedure. Used to graphically
+#'   compare posterior distributions of partial regression coefficients from
+#'   individual models in the model set to the posterior distributions resulting
+#'   from the model averaged partial regression coefficients. Also used to
+#'   compare posterior standard deviations of the continuous piece of the model
+#'   averaged distribution to corresponding standard deviations from individual
+#'   posterior distributions in tabular form.
 #' @param mcmc.list A list of posterior samples of partial regression
 #'   coefficients of interest for each model in the model set.
-#' @param g A numeric value specifying the value of thehyperparameter, \eqn{g}.
+#' @param g A numeric value specifying the value of the hyperparameter \eqn{g}.
 #' @param weights A vector of posterior model weights for all models in the
 #'   model set.
 #' @param PIP A vector of posterior inclusion probabilities for all potential
@@ -43,7 +48,7 @@ MApp <- function(mcmc.list, g, weights, PIP, plot.wind, max.display = NULL,
         coef.frames[[i]] <- vec.fun2(mcmc.list, i)
         coef.frames[[i]] <- data.frame(coef.frames[[i]], rep(mod.names, each = num.draws))
         names(coef.frames[[i]]) <- c("Post.Vec", "Model")
-        coef.frames[[i]]$Model <- gdata::reorder(coef.frames[[i]]$Model, new.order = mod.names)
+        coef.frames[[i]]$Model <- factor(coef.frames[[i]]$Model, levels = mod.names)
     }
 
     for (i in 1:p) {

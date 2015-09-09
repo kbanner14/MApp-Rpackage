@@ -5,7 +5,7 @@
 \title{Compute analytical posterior variance covariance matrix of partial
   regression coefficients}
 \usage{
-cov.fun(lmObject)
+cov.fun(lmObject, g = NULL, ...)
 }
 \arguments{
 \item{lmObject}{An object of class \code{lm}}
@@ -15,8 +15,10 @@ The posterior variance for the individual \code{lm} object.
 }
 \description{
 Compute posterior variance covariance matrix for an individual
-  regression model after model averaging. Posterior means are generated
-  assuming model averaging with the \code{bms()} function, with a unit
-  information prior (g = N) placed on the regression parameters.
+  regression model after model averaging. Posterior variance-covariance
+  matrices are generated assuming model averaging with Zellner's
+  \eqn{g}-prior [add citation here]. If no value of \eqn{g} is specified, the
+  unit information prior (g = N) is assumed. placed on the regression
+  parameters.
 }
 

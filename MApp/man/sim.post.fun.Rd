@@ -18,13 +18,13 @@ covariates.}
 \item{num.sims}{The number of draws to simulate.}
 }
 \value{
-A list of simulated posterior distribuitons for all partial
+A list of simulated posterior distributions for all partial
   regression coefficients for each model considered.
 }
 \description{
 Simulate draws from individual posterior distributions for all
   models in the model set. Posteriors are simulated assuming the unit
   information formulation (g = N) of the g-prior was used in the model
-  aeraging.
+  averaging.
 }
 

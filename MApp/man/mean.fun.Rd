@@ -4,7 +4,7 @@
 \alias{mean.fun}
 \title{Compute analytical posterior means}
 \usage{
-\method{mean}{fun}(lmObject)
+\method{mean}{fun}(lmObject, g = NULL, ...)
 }
 \arguments{
 \item{lmObject}{A lm object}
@@ -15,7 +15,8 @@ The posterior mean for the individual\code{lm} object.
 \description{
 Compute posterior means for an individual regression model after
   model averaging. Posterior means are generated assuming model averaging
-  with the \code{bms()} function, with a unit information prior (g = N)
-  placed on the regression parameters.
+  with Zellner's \eqn{g}-prior [add citation here]. If no value of \eqn{g} is
+  specified, the unit information prior (g = N) is assumed. placed on the
+  regression parameters.
 }
 

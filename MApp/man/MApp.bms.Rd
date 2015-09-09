@@ -2,13 +2,13 @@
 % Please edit documentation in R/plotting_fun_bms.R
 \name{MApp.bms}
 \alias{MApp.bms}
-\title{Model Averaged Poseriors Plot for bms objects}
+\title{Model Averaged Posteriors Plot}
 \usage{
 MApp.bms(x, plot.wind, num.sims = 1000, max.display = NULL,
   mod.names = NULL, include.coef = NULL, ...)
 }
 \arguments{
-\item{x}{an object of class \code{bms} where}
+\item{x}{an object of class \code{bma} from the \code{BMS::bms()} function}
 
 \item{plot.wind}{A vector of length 2 specifying the number of rows and
 columns to partition the plotting window into.}
@@ -25,14 +25,19 @@ posterior model probability.}
 to display.}
 }
 \value{
-The \code{MApp.bms} plot and a table of posterior standard deviations for
-  the top \code{max.display} individual models specified, along with the
+The \code{MApp.bms} plot and a table of posterior standard deviations
+  for the top \code{max.display} individual models specified, along with the
   posterior standard deviation of the model averaged parameter.
 }
 \description{
-Compare posterior distributions of partial regression
-  coefficients from individual models considered to the posterior
-  distribuitons of the model graphically and compare poserior standard
-  deviations in tabular form.
+For \code{bma} objects obtained using the \code{bms} function in
+  the \code{BMS} package. Creates a graphical display showing all relevant
+  output from the model averaging procedure. Used to graphically compare
+  posterior distributions of partial regression coefficients from individual
+  models in the model set to the posterior distributions resulting from the
+  model averaged partial regression coefficients. Also used to compare
+  posterior standard deviations of the continuous piece of the model averaged
+  distribution to corresponding standard deviations from individual posterior
+  distributions in tabular form.
 }
 

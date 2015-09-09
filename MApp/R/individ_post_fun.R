@@ -2,7 +2,7 @@
 #'   regression coefficients
 #' @description Compute posterior variance covariance matrix for an individual
 #'   regression model after model averaging. Posterior variance-covariance
-#'   matricies are generated assuming model averaging with Zellner's
+#'   matrices are generated assuming model averaging with Zellner's
 #'   \eqn{g}-prior [add citation here]. If no value of \eqn{g} is specified, the
 #'   unit information prior (g = N) is assumed. placed on the regression
 #'   parameters.
@@ -49,13 +49,13 @@ mean.fun <- function(lmObject, g = NULL,...){
 #' @description Simulate draws from individual posterior distributions for all
 #'   models in the model set. Posteriors are simulated assuming the unit
 #'   information formulation (g = N) of the g-prior was used in the model
-#'   aeraging.
+#'   averaging.
 #' @param input.mat A matrix defining the model set.
 #' @param Xmat The numeric p by n X matrix for the regression using all p
 #'   covariates.
 #' @param Yvec The numeric vector of responses.
 #' @param num.sims The number of draws to simulate.
-#' @return A list of simulated posterior distribuitons for all partial
+#' @return A list of simulated posterior distributions for all partial
 #'   regression coefficients for each model considered.
 sim.post.fun <- function(input.mat, Xmat, Yvec, num.sims) {
     # Function to simulate draws from MVt for individual model

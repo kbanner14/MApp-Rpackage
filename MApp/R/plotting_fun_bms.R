@@ -1,9 +1,14 @@
-#' @title Model Averaged Poseriors Plot for bms objects
-#' @description Compare posterior distributions of partial regression
-#'   coefficients from individual models considered to the posterior
-#'   distribuitons of the model graphically and compare poserior standard
-#'   deviations in tabular form.
-#' @param x an object of class \code{bms} where
+#' @title Model Averaged Posteriors Plot
+#' @description For \code{bma} objects obtained using the \code{bms} function in
+#'   the \code{BMS} package. Creates a graphical display showing all relevant
+#'   output from the model averaging procedure. Used to graphically compare
+#'   posterior distributions of partial regression coefficients from individual
+#'   models in the model set to the posterior distributions resulting from the
+#'   model averaged partial regression coefficients. Also used to compare
+#'   posterior standard deviations of the continuous piece of the model averaged
+#'   distribution to corresponding standard deviations from individual posterior
+#'   distributions in tabular form.
+#' @param x an object of class \code{bma} from the \code{BMS::bms()} function
 #' @param plot.wind A vector of length 2 specifying the number of rows and
 #'   columns to partition the plotting window into.
 #' @param max.display An integer specifying the number of models to display in
@@ -14,8 +19,8 @@
 #'   posterior model probability.
 #' @param include.coef A vector specifying which partial regression coefficients
 #'   to display.
-#' @return The \code{MApp.bms} plot and a table of posterior standard deviations for
-#'   the top \code{max.display} individual models specified, along with the
+#' @return The \code{MApp.bms} plot and a table of posterior standard deviations
+#'   for the top \code{max.display} individual models specified, along with the
 #'   posterior standard deviation of the model averaged parameter.
 MApp.bms <- function(x, plot.wind, num.sims = 1000, max.display = NULL,
                        mod.names = NULL, include.coef = NULL, ...) {
@@ -38,7 +43,8 @@ MApp.bms <- function(x, plot.wind, num.sims = 1000, max.display = NULL,
 	inmat <- t(inmat)
 
 	# simulate posterior draws
-	mcmc.list <- sim.post.fun(inmat, X.data[-1], X.data[, 1], num.sims)
+	mcmc.list <- sim.post.fun(input.mat = inmat, Xmat = Xmat, Yvec = Yvec,
+                              num.sims = num.sims)
 
     # number of models considered
     K <- length(mcmc.list)
@@ -58,8 +64,8 @@ MApp.bms <- function(x, plot.wind, num.sims = 1000, max.display = NULL,
         coef.frames[[i]] <- data.frame(coef.frames[[i]],
         					            rep(mod.names, each = num.draws))
         names(coef.frames[[i]]) <- c("Post.Vec", "Model")
-        coef.frames[[i]]$Model <- gdata::reorder.factor(coef.frames[[i]]$Model,
-                                                   new.order = mod.names)
+        coef.frames[[i]]$Model <- factor(coef.frames[[i]]$Model,
+                                                   levels = mod.names)
     }
 
     for (i in 1:p) {

@@ -9,9 +9,17 @@ vignette: >
   %\usepackage[utf8]{inputenc}
 ---
 
-The `MApp` plotting function works with lists of posterior draws and the `MApp.bms` plotting funciton works with `bma` objects. A quick introduction to Bayesian model averaging can be found in the `bms` package vignette (`vignette("bms")`) and a detailed discussion of the rational behind the `MApp` plot can be found in _Model Averaging Partial Regression Coefficients: Considerations and Practical Guidelines_, (Banner & Higgs, 2015). In brief, model averaging was developed as a predictive tool and its use has been recently extended to model averaging of partial regression coefficients across multiple models. The inference drawn from the latter application of model averaging typically results in explanations of "average effects" for each of the coefficients of interest. The main issue is that interpreting model averaged partial regression coefficients as "average effects" can very misleading since their interpretations are dependent on what else is in each individual model. Therefore, averaging over posteriors that have very different meanings to form an "avearage effect" often makes little sense. `MApp` provides the user with a visual of how the model averaged posterior distributions are constructed. We illustrate the utility of the plotting function as well as other useful functions with two examples.
+```{r setup, echo = FALSE}
+source("../R/individ_post_fun.R")
+source("../R/plotting_fun.R")
+source("../R/plotting_fun_bms.R")
+```
 
-## Example 1
+The `MApp()` function works with lists of posterior draws and the `MApp.bms()` function works with `bma` objects. A quick introduction to Bayesian model averaging and details about the `bms()` function can be found in the `BMS` package vignette (`vignette("BMS")`). 
+
+In brief, model averaging was developed as a predictive tool and its use has been recently extended to model averaging of partial regression coefficients across multiple models. The inference drawn from the latter application of model averaging typically results in explanations of "average effects" for each of the coefficients of interest. The main issue is that interpreting model averaged partial regression coefficients as "average effects" can be very misleading since their interpretations are dependent on what else is in each individual model. Therefore, averaging over posteriors that have very different meanings to form an "avearage effect" often makes little sense. `MApp` provides the user with a visual of how the model averaged posterior distributions are constructed. A detailed discussion of the rational behind the `MApp` plot can be found in _Model Averaging Partial Regression Coefficients: Considerations and Practical Guidelines_, (Banner & Higgs, 2015). Here, we illustrate the utility of the plotting function as well as other useful functions within our pacakge with two examples.
+
+## Example 1: using `MApp.bms()`
 
 We will use the `case0902` data from the `Sleuth2` package for this example. The data are comprised of average values for gestation length (days), litter size (number of offspring), body size (kg) and brain weight (g) for 96 species of mammals. We use the natural log transformation on average brain weight (_lbrain_), body size (_lbody_), and gestation length (_lgest_), as these relationships are approximately linear on the log-log scale. 
 
@@ -42,7 +50,13 @@ brain <- BMS::bms(brainData, g = "UIP",
 class(brain)
 ```
 
-`bms` places Zellner's $g$-prior on the coefficients and we specify a discrete uniform prior on the  $2^3 = $`r 2^3` models included in the "all-subsets" model set. 
+`bms` places Zellner's $g$-prior on the coefficients and we specify a discrete uniform prior on the  $2^3=$ `r 2^3` models in the model set (defined by all first order combinations of the potential covariates). Using `MApp.bms()` with an object genreated by `bms()` is simple: 
+
+```{r bmsfig, fig.show = 'hold', fig.width = 7, fig.height = 5, eval = FALSE}
+MApp.bms(x = brain, plot.wind = c(1,3))
+```
+
+We can add
 
 
 
