@@ -9,39 +9,28 @@ vignette: >
   %\usepackage[utf8]{inputenc}
 ---
 
-```{r setup, echo = FALSE}
-source("../R/individ_post_fun.R")
-source("../R/plotting_fun.R")
-source("../R/plotting_fun_bms.R")
+```{r setup, echo = FALSE, message=FALSE}
+devtools::load_all("..")
+```
+
+```{r echo = TRUE}
+library(MApp)
 ```
 
 The `MApp()` function works with lists of posterior draws and the `MApp.bms()` function works with `bma` objects. A quick introduction to Bayesian model averaging and details about the `bms()` function can be found in the `BMS` package vignette (`vignette("BMS")`). 
 
-In brief, model averaging was developed as a predictive tool and its use has been recently extended to model averaging of partial regression coefficients across multiple models. The inference drawn from the latter application of model averaging typically results in explanations of "average effects" for each of the coefficients of interest. The main issue is that interpreting model averaged partial regression coefficients as "average effects" can be very misleading since their interpretations are dependent on what else is in each individual model. Therefore, averaging over posteriors that have very different meanings to form an "avearage effect" often makes little sense. `MApp` provides the user with a visual of how the model averaged posterior distributions are constructed. A detailed discussion of the rational behind the `MApp` plot can be found in _Model Averaging Partial Regression Coefficients: Considerations and Practical Guidelines_, (Banner & Higgs, 2015). Here, we illustrate the utility of the plotting function as well as other useful functions within our pacakge with two examples.
+In brief, model averaging was developed as a predictive tool and its use has been recently extended to model averaging of partial regression coefficients across multiple models. The inference drawn from the latter application of model averaging typically results in explanations of "average effects" for each of the coefficients of interest. The main issue is that interpreting model averaged partial regression coefficients as "average effects" can be very misleading since their interpretations are not necessarily the same across models. Therefore, model avearging of partial regression coefficients almost never makes sense. `MApp` provides the user with a visual of how the model averaged posterior distributions are constructed. A detailed discussion of the rational behind the `MApp` plot can be found in _Model Averaging Partial Regression Coefficients: Considerations and Practical Guidelines_, (Banner & Higgs, 2015). With two examples, we illustrate the utility of the plotting function as well as other useful functions in our package. 
 
 ## Example 1: using `MApp.bms()`
 
-We will use the `case0902` data from the `Sleuth2` package for this example. The data are comprised of average values for gestation length (days), litter size (number of offspring), body size (kg) and brain weight (g) for 96 species of mammals. We use the natural log transformation on average brain weight (_lbrain_), body size (_lbody_), and gestation length (_lgest_), as these relationships are approximately linear on the log-log scale. 
+We will use the `brainData` in this package, which were obtained from the `case0902` dataset from the `Sleuth2` package. The data are comprised of average values for log gestation length log(days), litter size (number of offspring), log body size log(kg) and log brain weight log(g) for 96 species of mammals. 
 
 ```{r, brain, results='asis'}
-brainData <- Sleuth2::case0902
-
-# get the data in the proper format for use in BMS
-brainData <- brainData[, -c(1)]
-
-# make the appropriate variable transformations
-brainData$lbrain <- log(brainData$Brain)
-brainData$lbody <- log(brainData$Body)
-brainData$lgest <- log(brainData$Gestation)
-brainData$litter <- brainData$Litter
-
-# keep only the variables you need in the dataframe
-brainData <- brainData[, c(5:8)]
-
-knitr::kable(head(brainData, 10))
+data(brainData)
+knitr::kable(head(brainData, 5))
 ```
 
-We can use the `bms` function from the `BMS` package to obtain a `bma` object: 
+We can use the `bms` function from the `BMS` package to obtain a `bma` object. 
 
 ```{r bmsobj}
 brain <- BMS::bms(brainData, g = "UIP", 
@@ -50,13 +39,15 @@ brain <- BMS::bms(brainData, g = "UIP",
 class(brain)
 ```
 
-`bms` places Zellner's $g$-prior on the coefficients and we specify a discrete uniform prior on the  $2^3=$ `r 2^3` models in the model set (defined by all first order combinations of the potential covariates). Using `MApp.bms()` with an object genreated by `bms()` is simple: 
+`bms` places Zellner's $g$-prior on the coefficients and we specify a discrete uniform prior on the  $2^3=$ `r 2^3` models in the model set, where the model set is defined by all first order combinations of the potential covariates (see `help(bms)` and `vignette("BMS")` for more details). Using `MApp.bms()` with an object generated by `bms()` is simple: 
 
-```{r bmsfig, fig.show = 'hold', fig.width = 7, fig.height = 5, eval = FALSE}
-MApp.bms(x = brain, plot.wind = c(1,3))
+```{r bmsfig, fig.show = 'hold', fig.width = 7, fig.height = 5, eval = FALSE, fig.cap="MApp for each explanatory variable in the dataset"}
+MApp.bms(brain, plot.wind = c(1,3))
 ```
 
-We can add
+__Add some takeaways__ 
+
+We can add model names in 
 
 
 
@@ -68,7 +59,7 @@ Vignettes are long form documentation commonly included in packages. Because the
 
 ## Vignette Info
 
-Note the various macros within the `vignette` setion of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
+Note the various macros within the `vignette` section of the metadata block above. These are required in order to instruct R how to build the vignette. Note that you should change the `title` field and the `\VignetteIndexEntry` to match the title of your vignette.
 
 ## Styles
 
