@@ -15,6 +15,7 @@ License: MIT
 LazyData: true
 Imports:
     LearnBayes (>= 2.15),
-    beanplot
+    beanplot,
+    BMS
 Suggests: knitr
 VignetteBuilder: knitr
