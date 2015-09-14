@@ -132,7 +132,7 @@ vec.fun2 <- function(post.list, coef) {
 #'   posterior vector.
 MApost.fun <- function(post.dataframe, models, weight, num.draws) {
 
-    post.dataframe$Include <- (as.numeric(is.na(post.dataframe$Post.Vec)) - 1) * (-1)
+    post.dataframe$Include <- as.numeric(is.na(post.dataframe$Post.Vec) == FALSE)
     keep <- with(subset(post.dataframe, Include == 1), unique(Model))
     idx.in <- rep(NA, length(keep))
     for (i in 1:length(keep)) {

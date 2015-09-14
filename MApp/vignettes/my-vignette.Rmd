@@ -55,27 +55,29 @@ We can add specific model names in place of the generic $M_1, M_2,..., M_7$ with
 ```{r bmsfig2, fig.show = 'hold', fig.width = 7, fig.height = 5, fig.cap="MApp for each explanatory variable in the dataset"}
 MApp.bms(brain, plot.wind = c(1,3), 
           mod.names = c("BGL", "BG", "BL", "B", "G", "GL", "L"))
+
 ```
 
 
-## Example 2: Using `MApp()`
+## Example 2: Other options in `MApp.bms()`  
 
-You may have wanted more flexibility in your model set, so you may have used `BUGS`, `OpenBUGS`, or programmed your own Gibbs sampler to search through the model space. In this case you will have many sets of posterior draws for the partial regression coefficients estimated by each of the models in your model set. Oftentimes this will be conveniently stored in a list of length equal to the cardinality of your model set. In this case, you can still create a Model Averaged posteriors plot using our function, you will just have to add a few more arguments. 
-
-We will use the `bfat` data set, included in our package, to demonstrate the flexibility of our plotting function. 
+We will use the `bfat` data set, included in our package, to demonstrate the flexibility of our plotting function.
 
 ```{r, results='asis'}
 data(bfat)
 knitr::kable(head(bfat, 5))
+fat.bms <- bms(bfat, mprior = "uniform", g = "UIP", user.int = F)
 ```
 
+__Add details about `bma` object going into bms__ 
 
-We will use the `sim.post.fun()` function to generate a list of posterior draws according to the unit informaiton formulation of Zellner's $g$-prior. This is an unecessary step since the user would already have these draws if they had written their own Gibbs sampler. We will need
-
+<!-- 
+___CUT___
+We will use the `sim.post.fun()` function to generate a list of posterior draws according to the unit informaiton formulation of Zellner's $g$-prior. This is an unecessary step since the user would already have these draws if they had written their own Gibbs sampler. 
 ```{r sim, results = 'asis', cache=TRUE}
 # We use bms() to get the pieces we need....these would be obtained from 
 # some other sampler if MApp is being used...
-fat.bms <- bms(bfat, mprior = "uniform", g = "UIP", user.int = F)
+
 
 # save posteiror model probabilities from top 500 models
 pmps <- topmodels.bma(fat.bms)[14, 1:500]
@@ -101,20 +103,35 @@ class(bfat.sim)
 # there are simulated draws from the top 500 models
 length(bfat.sim)
 
-# We generated 1000 "posterior draws" for each of the 13 potential explanatory variables
+# We generated 1000 "posterior draws" for each of the 13 potential explanatory
+# variables
 dim(bfat.sim[[1]])
 
 # Draws from the top model look like this.
 knitr::kable(head(bfat.sim[[1]], 5))
 ```
+--> 
 
-Now we can use the `MApp()`
+When dealing with a large model set, we can tell `MApp.bms()` to display specific models. We can also specify which coefficient to include in the model averaged posteriors plot. By default, the function will plot all models and all coefficients. __Add sentence about the approximation when a bms object only stores info from top 500 models.__ 
 
-```{r bfatplot ,fig.width=7, fig.height=5}
-MApp(mcmc.list = bfat.sim, g = dim(bfat)[1], weights = pmps,
-      PIP = PIP,plot.wind = c(1,3), max.display = 20, 
-      include.coef = c(1,2,3))
+<!--
+```{r bfatplot ,fig.width=7, fig.height=5, results='asis'}
+bfat.mapp <- MApp.bms(fat.bms, plot.wind = c(1,3), 
+                        include.coef = c(13, 2, 4), 
+                        max.display = 20, 
+                        num.sims = 1000)
+
+knitr::kable(bfat.mapp)
 ```
+-->
+
+## Example 3  Using MApp() 
+
+___Maybe get rid of demonstrating simulation function, since it requires output from `bms`. Perhaps better to just show flexibility of MApp.bms function. Should simplify MAPP function so that it doesn't have to go through `sim.post.fun()` steps to use list of posterior draws...___
+
+You may have wanted more flexibility in your model set, so you may have used `BUGS`, `OpenBUGS`, or programmed your own Gibbs sampler to search through the model space. In this case you will have many sets of posterior draws for the partial regression coefficients estimated by each of the models in your model set. Oftentimes this will be conveniently stored in a list of length equal to the cardinality of your model set. In this case, you can still create a Model Averaged posteriors plot using our function, you will just have to add a few more arguments. 
+
+
 <!--
 Vignettes are long form documentation commonly included in packages. Because they are part of the distribution of the package, they need to be as compact as possible. The `html_vignette` output type provides a custom style sheet (and tweaks some options) to ensure that the resulting html is as small as possible. The `html_vignette` format:
 

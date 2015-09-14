@@ -22,25 +22,28 @@
 #' @return The \code{MApp.bms} plot and a table of posterior standard deviations
 #'   for the top \code{max.display} individual models specified, along with the
 #'   posterior standard deviation of the model averaged parameter.
-MApp.bms <- function(x, plot.wind, num.sims = 1000, max.display = NULL,
-                       mod.names = NULL, include.coef = NULL, ...) {
+MApp.bms <- function(x, plot.wind, num.sims = 1000,
+                     max.display = NULL, mod.names = NULL,
+                     include.coef = NULL, ...) {
 
   # extract what we need from the bms object
   results <- data.frame(coef(x))
 	PIP <- results[order(results$Idx), ][, 1]
 	Yvec <- x$X.data[,1]
   Xmat <- x$X.data[,-1]
-	weights <- sort(pmp.bma(x)[,1], decreasing = T)
-	weights <- weights[-length(weights)]
-  g <- x$gprior.info$g
 
-	# Create input matrix to work in simulation function. Rows ordered w.r.t
-	# posterior model probability
-	post.means <- x$topmod$betas()
-	idx <- which(apply(post.means, 2, sum) != 0)
-	inmat <- post.means[,c(idx)]
-	inmat[inmat != 0] <- 1
-	inmat <- t(inmat)
+  # Create input matrix to work in simulation function. Rows ordered w.r.t
+  # posterior model probability
+  post.means <- x$topmod$betas()
+  idx <- which(apply(post.means, 2, sum) != 0)
+  inmat <- post.means[,c(idx)]
+  inmat[inmat != 0] <- 1
+  inmat <- t(inmat)
+	weights <- sort(pmp.bma(x)[,1], decreasing = T)
+  weights <- weights[idx]
+#   ifelse(null.include == TRUE, weights <- weights[-length(weights)],
+#           weights <- weights)
+  g <- x$gprior.info$g
 
 	# simulate posterior draws
 	mcmc.list <- sim.post.fun(input.mat = inmat, Xmat = Xmat, Yvec = Yvec,
@@ -52,10 +55,12 @@ MApp.bms <- function(x, plot.wind, num.sims = 1000, max.display = NULL,
     if (is.null(mod.names))
         mod.names <- paste("M", seq(1:K), sep = "")
     names(mcmc.list) <- paste("M", seq(1:K), sep = "")  # Create names for models
-    num.draws <- dim(mcmc.list[[1]])[1]  # Number of draws from each posterior beta vector
+    #not sure we need num.draws. Can probably just use num.sims
+    num.draws <- dim(mcmc.list[[1]])[1]
     var.names <- names(mcmc.list[[1]])
 
-    # Create a data frame for each coefficient estimate and track which model it came from
+    # Create a data frame for the posteriors for each of the coefficients from
+    # each of the models track which model it came from
 
     coef.frames <- list(1:p)
 
