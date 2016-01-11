@@ -6,17 +6,18 @@ Authors@R: person(given = "Katharine", family = "Banner",
              role = c("aut", "cre"))
 Description: A summary plot for model averaging of partial regression coefficients
   allowing the user to plot and compare posterior distributions of partial regression
-  coefficients from individual models and compare them to their resulting posterior
-  distribution of the model averaged coefficient. The plot displays all of the
-  relevant output from Bayesian model averaging. This function currently works
-  with output from the bms() function in the {bms} package.
+  coefficients from individual models and compare them to the resulting posterior
+  distribution of their model averaged counterpart. This function currently works
+  with output from the bms() function in the {bms} package, lists and/or matricies of
+  draws from self-coded MCMC samplers, and results from information theoretic based
+  approximations to posteiror model weights.
 Depends: R (>= 3.1.2)
 License: MIT
 LazyData: true
 Imports:
-    LearnBayes (>= 2.15),
     beanplot,
     BMS,
-    dplyr
+    dplyr,
+    LearnBayes (>= 2.15)
 Suggests: knitr
 VignetteBuilder: knitr
