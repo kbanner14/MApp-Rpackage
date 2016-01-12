@@ -17,4 +17,6 @@ The `{MAPP}` package provides plotting functions to help researchers digest resu
 
 # Use `{MAPP}`
 
- Documentation is provided for all functions through `help()` and examples for all plotting functions are provided in the package vignette `MApp\vignettes\my-vignette.Rmd`.
+Documentation is provided for all functions through `help()` and examples for all plotting functions are provided in the package vignette `MApp\vignettes\my-vignette.Rmd`. The vignette is viewable within this repository by navigating to `Mapp\vignettes`. 
+
+
