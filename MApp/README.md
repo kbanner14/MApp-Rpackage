@@ -1,4 +1,4 @@
-# {MApp}
+# `{MAPP}`
 
 The `{MAPP}` package provides plotting functions to help researchers digest results from the model averaging procedure when applied to partial regression coefficients. There are four major plotting functions:  
 
@@ -15,3 +15,6 @@ The `{MAPP}` package provides plotting functions to help researchers digest resu
 2. Set your working directory to the location of the `MApp` repository on your computer. 
 3. Run `devtools::load_all(".")` to load the package. Note that you must have the package `devtools` installed (to install run `install.packages("devtools")`).
 
+# Use `{MAPP}`
+
+ Documentation is provided for all functions through `help()` and examples for all plotting functions are provided in the package vignette `MApp\vignettes\my-vignette.Rmd`.
