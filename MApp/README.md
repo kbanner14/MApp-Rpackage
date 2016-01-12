@@ -1,6 +1,17 @@
 # {MApp}
 
-The `MApp()` function works with lists of posterior draws, the `MApp_MCMC` function works with matricies of posterior draws, and the `MApp_bms()` function works with `bma` objects created by the `BMS::bms` function. A quick introduction to Bayesian model averaging and details about the `bms()` function can be found in the `BMS` package vignette (`vignette("BMS")`). Instructions for using the `MApp` functions are provided in the `my-vignette.Rmd` file. 
+The `{MAPP}` package provides plotting functions to help researchers digest results from the model averaging procedure when applied to partial regression coefficients. There are four major plotting functions:  
 
-To use these functions, the user can download the `MApp/` repository and loading the package 
-`devtools::load_all(".")`. To do this, the `devtools` package must be installed. To install `devtools` run `install.packages("devtools")`. 
+- `MApp_bms()` works with `bma` objects obtained from the `bms()` function @BMS (details about the `bms()` function can be found in `vignette("BMS")`.
+- `MApp_MCMC` works with default output from the implementation of model averaging using the `OpenBUGS` @BUGS or self programmed RJMCMC samplers. 
+- `MApp()` works with lists of posterior draws. 
+- `MApp_IC()` works with approximate posterior model probabilities estimated with AIC or BIC and estimates and standard errors of partial regression coefficients from all individual models. 
+
+#Load `{MAPP}` 
+
+`{MAPP}` can be loaded in three steps: 
+
+1. Download all files in the `MApp/` repository from [here](https://github.com/kbanner14/MApp-Rpackage/tree/master/MApp)
+2. Set your working directory to the location of the `MApp` repository on your computer. 
+3. Run `devtools::load_all(".")` to load the package. Note that you must have the package `devtools` installed (to install run `install.packages("devtools")`).
+
