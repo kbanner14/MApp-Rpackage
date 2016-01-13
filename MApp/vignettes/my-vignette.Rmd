@@ -11,22 +11,53 @@ vignette: >
   %\usepackage[utf8]{inputenc}
 ---
 
+#Model averaging of partial regression coefficients
+
+In brief, model averaging was developed as a predictive tool and its use has been recently extended to model averaging of partial regression coefficients across multiple models. The inference drawn from the latter application of model averaging typically results in explanations of "average effects" for each of the coefficients of interest, presenting a unique question, what does "average effect" mean? In the presence of multicollinearity, the interpretations of partial regression coefficients are not constant across all models making "average effects" difficult to understand. `MApp` provides the user with a visual of what goes into model averaged partial regression coefficients. A detailed discussion of the rational behind the `MApp` plot can be found in _Model Averaging Partial Regression Coefficients: Considerations and Practical Guidelines_, @CITATION/WEBSITE. 
+
+Many applications of model averaging are conducted in the Bayesian perspective and many of our plotting functions in `MApp` are designed to work with posterior draws; a quick introduction to Bayesian model averaging can be found in the `BMS` package vignette (`vignette("BMS")`), @ADD A FEW CITATIONS HERE. POSSIBLY HOETING, LB, AND BA. 
+
+
+#Loading MAPP
+
+
+Load `{MAPP}` in three steps: 
+
+1. Download all files in the `MApp` repository from [here](https://github.com/kbanner14/MApp-Rpackage/tree/master/MApp)
+2. Set your working directory to the location of the `MApp` repository on your computer. 
+3. Run the following line of code to load the package. Note that you must have the package `devtools` installed (to install run `install.packages("devtools")`).
+
+```{r echo = TRUE, eval=FALSE}
+devtools::load_all(".")
+```
+
+
 ```{r setup, echo = FALSE}
 devtools::load_all("..")
 ```
 
-```{r echo = TRUE}
+
+```{r echo = TRUE, warning=FALSE, message=FALSE}
 library(MApp)
 library(dplyr)
 ```
 
-The `{MAPP}` packages provides a set of plotting functions to help researchers visually examine and scrutinize results from model averaging partial regression coefficinets. The plotting functions work with lists of posterior draws (`MApp()`), default output from the implementation of model averaging using the `OpenBUGS` or self programmed RJMCMC samplers @Citation software (`MApp_MCMC`), and with `bma` objects obtained from the `bms()` function (`MApp_bms()`). A quick introduction to Bayesian model averaging and details about the `bms()` function can be found in the `BMS` package vignette (`vignette("BMS")`). 
 
-In brief, model averaging was developed as a predictive tool and its use has been recently extended to model averaging of partial regression coefficients across multiple models. The inference drawn from the latter application of model averaging typically results in explanations of "average effects" for each of the coefficients of interest. The main issue is that interpreting model averaged partial regression coefficients as "average effects" can be difficult to understand since their interpretations are not necessarily the same across models. `MApp` provides the user with a visual of how the model averaged posterior distributions are constructed. A detailed discussion of the rational behind the `MApp` plot can be found in _Model Averaging Partial Regression Coefficients: Considerations and Practical Guidelines_, @CITATION/PLACE TO FIND MANUSCRIPT. In this vignette we illustrate the utility of the plotting function as well as other useful functions in our package. 
 
-## Using `MApp_bms()`
+The `{MAPP}` package provides plotting functions to help researchers digest results from the model averaging procedure when applied to partial regression coefficients. There are four major plotting functions:  
 
-We will use the `brainData` in this package, which were obtained from the `case0902` dataset from the `Sleuth2` package. The data are comprised of average values for log gestation length log(days), litter size (number of offspring), log body size log(kg) and log brain weight log(g) for 96 species of mammals. 
+- `MApp_bms()` works with `bma` objects obtained from the `bms()` function @BMS (details about the `bms()` function can be found in `vignette("BMS")`).
+- `MApp_MCMC` works with default output from the implementation of model averaging using the `OpenBUGS` @BUGS or self programmed RJMCMC samplers. 
+- `MApp()` works with lists of posterior draws. 
+- `MApp_IC()` works with approximate posterior model probabilities estimated with AIC or BIC and estimates and standard errors of partial regression coefficients from all individual models. 
+
+In this vignette we illustrate the utility of the plotting functions as well as other useful functions in our package. 
+
+
+# Using `MApp_bms()`
+
+## Example 1: A small model set
+We will use the `brainData` in this package, which were obtained from the `case0902` dataset from the `Sleuth2` package @SLEUTH2. The data are comprised of average values for log gestation length log(days), litter size (number of offspring), log body size log(kg) and log brain weight log(g) for 96 species of mammals. 
 
 ```{r, brain, results='asis'}
 data(brainData)
@@ -49,9 +80,9 @@ class(brain)
 MApp_bms(x = brain, plot_wind = c(1,3))
 ```
 
-__Add some takeaways__ 
 
-We can add specific model names in place of the generic $M_1, M_2,..., M_7$ with the `mod_names` arguement. 
+
+We can add specific model names in place of the generic $M_1, M_2,..., M_7$ with the `mod_names` argument. 
 
 ```{r bmsfig2, fig.show = 'hold', fig.width = 7, fig.height = 5, fig.cap="MApp for each explanatory variable in the dataset"}
 MApp_bms(brain, plot_wind = c(1,3), 
@@ -59,10 +90,11 @@ MApp_bms(brain, plot_wind = c(1,3),
 
 ```
 
+__ADD TAKEAWAYS AND AT LEAST ONE DETAILED DESCRIPTION OF HOW TO READ THE PLOT__ 
 
-##Other options in `MApp_bms()`  
+##Example 2: Other options in `MApp_bms()` for large model sets
 
-We will use the `bfat` data set, included in our package, to demonstrate the flexibility of our plotting function for problems with a larger set of potential predictors. These data were used in Hoeting et. al. (1999) to demonstrate some predictive advanatages of Bayesian model averaging. The goal was to predict percent body fat with the 13 predictors in the `bfat` data set. First, we will take a look at these data and create a `bma` object, `bfat_bms`, using the `bms()` function (again, we chose a uniform prior on the model space and Zellner's $g$-prior [citation] with $g = n$).
+We will use the `bfat` data set @CITATION, included in our package, to demonstrate the flexibility of our plotting function for problems with a larger set of potential predictors. These data originally appeared in @citation and were used in Hoeting et. al. (1999) to demonstrate specific predictive advantages of Bayesian model averaging as compared to standard (for the time) model selection techniques. The goal was to predict percent body fat with the 13 predictors availabe. First, we will take a look at these data and create a `bma` object, `bfat_bms`, using the `bms()` function (again, we chose a uniform prior on the model space and Zellner's $g$-prior @citation with $g = n$).
 
 ```{r, results='asis'}
 data(bfat)
@@ -73,7 +105,7 @@ bfat_bms <- bms(bfat, mprior = "uniform", g = "UIP", user.int = F)
 class(bfat_bms)
 ```
 
-There are $2^{13} =$ `r 2^(13)` potential models in the model set. By default a `bma` object generated by `bms()` will store weights and posterior summary measures from the top 500 models. The user should check the proprotion of the posterior model mass that is accounted for by the top 500 models to ensure the approximation resulting from `MApp_bms` will be resonable. _Clean up this paragraph_. 
+If we consider all potential first-order combinations of the predictors, there are $2^{13} =$ `r 2^(13)` potential models in the model set. By default a `bma` object generated by `bms()` will store weights and posterior summary measures from the top 500 models considered. Using the closed form posterior results for model averaging with a $g$-prior on the regression coefficients, `MApp_bms` will obtain a specified number of draws from the analytical posterior distributions for all models stored in the `bma` object and will create a model averaged distribution by sampling from these individual posteriors with probabilities equal to the posterior model probabilities. To ensure the approximate model averaged distribution created by `MApp_bms` is reasonable, the user should check the proportion of the posterior model mass that is accounted for by the top 500 models. In this case, the top 500 models accounted for approximately `r 100*round(sum(pmp.bma(bfat_bms)[,1]), 2)`% of the posterior mass and we can be confident that the approximate model averaged distributions will be very similar to the model averaged distributions when all models are considered. 
 
 ```{r}
 # see how much of the posterior model mass is accounted for by the top 500
@@ -82,20 +114,66 @@ sum(pmp.bma(bfat_bms)[,1])
 ```
 
 
-Because plotting 500 models simulataneously would make the model averaged posteriors plot impossible to read, we can tell `MApp_bms()` to display a subset of those models using the `max_display` arguement.  We can also specify which coefficient to include in the model averaged posteriors plot with the `include_coef` argument. If `max_display` and `include_coef` are left unspecified, the function will plot all models and all coefficients. Because the object we are using in `MApp_bms` includes informaiton from the top 500 models, the posterior distribuiton for the model averaged partial regression coefficients will be gerenarted according to those top 500 models. __Make this cleaner...__ 
+Because plotting 500 models simultaneously would make MApp impossible to read, we can tell `MApp_bms()` to display a subset of those models using the `max_display` argument.  We can also specify which coefficient to include in the model averaged posteriors plot with the `include_coef` argument. If `max_display` and `include_coef` are left unspecified, the function will plot all models stored in the `bma` object and all coefficients. 
+
+<!-- 
+Because the object we are using in `MApp_bms` includes information from the top 500 models, the posterior distribution for the model averaged partial regression coefficients will be generated according to those top 500 models. 
+-->  
 
 
-```{r bfatplot ,fig.width=7, fig.height=5, results='asis'}
-bfat_mapp <- MApp_bms(bfat_bms, plot_wind = c(1,3), 
+```{r bfatplot, fig.width=7, fig.height= 5}
+MApp_bms(bfat_bms, plot_wind = c(1,3), 
                         include_coef = c(13, 2, 4), 
                         max_display = 10, 
                         num_sims = 1000)
-
-knitr::kable(bfat_mapp)
 ```
 
-## Example 3  Using MApp() 
 
-You may have wanted more flexibility in your model set, so you may have used `BUGS`, `OpenBUGS`, or programmed your own Gibbs sampler to search through the model space. In this case you will have many sets of posterior draws for the partial regression coefficients estimated by each of the models in your model set. Oftentimes this will be conveniently stored in a list of length equal to the cardinality of your model set. In this case, you can still create a Model Averaged posteriors plot using our function, you will just have to add a few more arguments. 
 
-___[ADD EXAMPLE HERE!]___
+# Using MApp() and MApp_MCMC()
+
+You may have used something other than the `bms()` function to implement model averaging (e.g., `BUGS`, `OpenBUGS`, or self-programmed Gibbs sampler). In this case you will have many sets of posterior draws for the partial regression coefficients estimated by each of the models in your model set. Chains of posterior draws are usually stored in either a list (length equal to the cardinality of your model set), or as a matrix with posterior draws for quantities of interest (including model) as variable in the matrix. For list it is easy to create MApp with `MApp()`, and for matrices it is easy to create MApp with `MApp_MCMC()`.  
+
+##`MApp()`
+
+
+
+##`MApp_MCMC()`
+
+__FINISH__
+
+
+# Using MApp_IC()
+
+It is also common to obtain approximate posterior model probabilities (model weights) from certain information criterion (most commonly BIC, AIC, and AICc). A version of MApp can be created for comparing confidence intervals for partial regression coefficients across the models in the model set. For this example we will use the `brainData` data again here.  
+
+## Function for approximating posterior model probabilities
+
+- sentence about the necessary input, inmat. 
+- sentence about IC-approx function 
+
+```{r ICbrain, echo = TRUE, results='asis'}
+post_means <- t(brain$topmod$betas())
+post_means[post_means != 0] <- 1
+inmat <- post_means
+
+IC_approx <- approx_pmp(inmat, Xmat = brainData[,-1], Yvec = brainData[,1])
+knitr::kable(IC_approx[,c(1:5)])
+knitr::kable(IC_approx[,c(1,6:9)])
+knitr::kable(IC_approx[,c(1,10:13)])
+```
+
+
+- pull off BIC weights and summary statistics and plot with MApp_IC()
+- explain `x_coefB` and `x_seB`
+- MApp 
+
+```{r echo = TRUE, fig.width= 8, fig.height=5}
+# BIC weights
+x_coefB <- IC_approx[c(2:10), c(7:9)]
+x_seB <- IC_approx[c(2:10), c(11:13)]
+pmpB <- IC_approx[c(3:10),3]
+pmpB
+
+MApp_IC(x_coefB, x_seB, pmpB, inmat, var_names = c("lBody", "lGest", "litter"))
+```
