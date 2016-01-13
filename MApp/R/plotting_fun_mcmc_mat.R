@@ -25,18 +25,26 @@
 #'   the top \code{max.display} individual models specified, along with the
 #'   posterior standard deviation of the model averaged parameter.
 #'
-MApp_MCMC <- function(mcmc_draws, plot_wind = c(1,1),
+MApp_MCMC <- function(mcmc_draws, plot_wind,
                       max_display = NULL,
                       mod_names = NULL,
                       include_coef = NULL, ...) {
   # number of models
-  p <- dim(mcmc_draws)[2] - 1
-  K <- length(unique(mcmc_draws[,(p+1)]))
-  var_names <- names(mcmc_draws)[1:p]
+  p <- ncol(mcmc_draws) - 1
+  K <- length(unique(mcmc_draws[,1]))
+  var_names <- names(mcmc_draws)[2:ncol(mcmc_draws)]
+  inmat <- mcmc_draws[2:ncol(mcmc_draws)]
+  inmat[inmat != 0|NA] <- 1
+  inmat <- unique(inmat[,1:p])
+  inmat[is.na(inmat)] <-0
+  weights <- table(mcmc_draws[,1])/sum(table(mcmc_draws[,1]))
+  PIP <- t(inmat)%*%weights
+
+  mcmc_draws[mcmc_draws == 0] <- NA
 
   coef_frames <- as.list(1:p)
   for(i in 1:p){
-    coef_frames[[i]] <- mcmc_draws[,c(i,ncol(mcmc_test))]
+    coef_frames[[i]] <- mcmc_draws[,c(i+1,1)]
     ma <- data.frame(coef_frames[[i]][,1], rep("MA", nrow(coef_frames[[i]])))
     names(coef_frames[[i]]) <- c("post_vec", "model")
     names(ma) <- names(coef_frames[[i]])
@@ -48,12 +56,29 @@ MApp_MCMC <- function(mcmc_draws, plot_wind = c(1,1),
   if (is.null(mod_names))
     mod_names <- paste("M", seq(1:K), sep = "")
 
+
+  # index of three commonly chosen models
+     full <- which(apply(inmat, 1, sum) == p)
+     choiceIdx <- ifelse(full == 1 , 1, full)
+     choiceIdx <- unique(c(1,choiceIdx))
+
+
   if (is.null(max_display)) {
     for (i in 1:p) {
       coef_frames[[i]] <- coef_frames[[i]]
     }
     max_display <- K
-
+      } else {
+        if (max_display == "common3") {
+          for (i in 1:p) {
+            coef_frames[[i]]$mod <- as.numeric(coef_frames[[i]]$model)
+            coef_frames[[i]] <- subset(coef_frames[[i]], mod == 1 |
+                                         mod == choiceIdx[1]+1 |
+                                         mod == choiceIdx[2]+1)
+            coef_frames[[i]]$model <- factor(coef_frames[[i]]$model)
+            coef_frames[[i]] <- coef_frames[[i]][, 1:2]
+          }
+          max_display <- length(choiceIdx)
   } else {
     for (i in 1:p) {
       coef_frames[[i]]$mod <- as.numeric(coef_frames[[i]]$model)
@@ -62,7 +87,7 @@ MApp_MCMC <- function(mcmc_draws, plot_wind = c(1,1),
       coef_frames[[i]] <- coef_frames[[i]][, 1:2]
     }
 
-  }
+  }}
 
   # Find MaxMin of each beanplot
 
@@ -115,7 +140,7 @@ MApp_MCMC <- function(mcmc_draws, plot_wind = c(1,1),
 
   # make the beanplot
 
-  par(mfrow = c(plot_wind), las = 1, ask = T)
+  par(mfrow = c(plot_wind), las = 1)
   for (i in include_coef) {
 
     # Initilize plot
@@ -200,5 +225,4 @@ MApp_MCMC <- function(mcmc_draws, plot_wind = c(1,1),
   readline("Table of posterior standard deviations: compare individual models to the continuous component of the MA posterior.\n\n (press enter to display table)\n")
   return(SD)
 }
-
 
