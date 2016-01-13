@@ -130,22 +130,72 @@ MApp_bms(bfat_bms, plot_wind = c(1,3),
 
 
 
-# Using MApp() and MApp_MCMC()
+# Using `MApp()` and `MApp_MCMC()`
 
 You may have used something other than the `bms()` function to implement model averaging (e.g., `BUGS`, `OpenBUGS`, or self-programmed Gibbs sampler). In this case you will have many sets of posterior draws for the partial regression coefficients estimated by each of the models in your model set. Chains of posterior draws are usually stored in either a list (length equal to the cardinality of your model set), or as a matrix with posterior draws for quantities of interest (including model) as variable in the matrix. For list it is easy to create MApp with `MApp()`, and for matrices it is easy to create MApp with `MApp_MCMC()`.  
 
 ##`MApp()`
 
-
+- Is this function necessary? 
+- If yes, add example here? 
 
 ##`MApp_MCMC()`
 
+Here we simulate data that are similar to the data we would obtain from the `coda` package @CODA. We will have a column for model and columns for the estimates of partial regression coefficients from that model. Here we have considered 3 variables and 7 models (we excluded the null model from this model set).  
+
+```{r mcmc-matrix, echo = TRUE, warning=FALSE, message=FALSE}
+set.seed(12)
+mcmc_mat <- data.frame(LearnBayes::rmnorm(700, mean = c(-1,3,6), varcov = diag(3)))
+mcmc_mat$model <- rep(paste0("M",1:7), each = 100)
+mcmc_mat <- mcmc_mat[,c(4,1,2,3)]
+inmat <- matrix(c(1,1,1,
+  			  1,1,0, 
+				  1,0,1,
+				  0,1,1,
+				  1,0,0,
+				  0,1,0,
+				  0,0,1), 
+				 byrow = T, 
+				 nrow = 7, 
+				 ncol = 3)
+
+for(i in 1:7){
+  idx <- which(mcmc_mat[,1] == paste0("M",i))
+  mcmc_mat[idx, c(2:4)] <- t(apply(mcmc_mat[idx,c(2:4)], 1 , function(x){x*inmat[i,]}))
+  }
+
+# shuffle order
+mcmc_mat <- mcmc_mat[sample(1:700, size = 700, rep = F),]
+```
+
+The data are of the form: 
+
+```{r MCMC, results='asis'}
+knitr::kable(head(mcmc_mat))
+```
+
+
+Create Mapp by using
+
+```{r MCMCmat, fig.width=7, fig.height=5, echo=TRUE}
+MApp_MCMC(mcmc_mat, plot_wind = c(1,3))
+```
+
 __FINISH__
 
+- Add `max_display = "common3"` to this example 
 
-# Using MApp_IC()
+```{r MCMCcommon, fig.width=7, fig.height=5, echo=TRUE}
+MApp_MCMC(mcmc_mat, plot_wind = c(1,3), max_display = "common3")
+```
 
-It is also common to obtain approximate posterior model probabilities (model weights) from certain information criterion (most commonly BIC, AIC, and AICc). A version of MApp can be created for comparing confidence intervals for partial regression coefficients across the models in the model set. For this example we will use the `brainData` data again here.  
+- discuss implication on posterior var of PEP and posterior location of the coefficient for  X3
+- use trout data instead?
+
+
+# Using `MApp_IC()`
+
+It is also common to obtain approximate posterior model probabilities (model weights) from certain information criterion (most commonly: BIC, AIC, and AICc). A version of MApp can be created for comparing confidence intervals for partial regression coefficients across the models in the model set. For this example we will re-examine the `brainData`.  
 
 ## Function for approximating posterior model probabilities
 
