@@ -1,4 +1,4 @@
-#  The  `{MAPP}` package is contained in the directory `MApp\` within this repository
+#  Model Averaged posteriors plot `{MAPP}`
 
 The `{MAPP}` package provides plotting functions to help researchers digest results from the model averaging procedure when applied to partial regression coefficients. There are four major plotting functions:  
 
@@ -9,7 +9,7 @@ The `{MAPP}` package provides plotting functions to help researchers digest resu
 
 # Load `{MAPP}` 
 
-`{MAPP}` can be loaded by following these steps: 
+The package `{MAPP}` is contained in the directory `MApp\` within this repository. This package can be loaded by following these steps: 
 
 1. Install package dependencies: `LearnBayes`, `beanplot`, `dplyr`, and `BMS`. Use `install.packages("packagename")` to install these packages.
 2. Download all files in the `MApp-Rpackage/` repository from the _Download Zip_ button on the right hand side of the screen 
