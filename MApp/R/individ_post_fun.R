@@ -109,7 +109,7 @@ bms_post_sim <- function(input_mat, Xmat, Yvec, num_sims, g = NULL) {
     # draws for coefficients from all other models are mvt's
     # obtain posterior moments
     for (i in idx){
-      xs1 <- names(Xmat[which(input_mat[i, ] == 1)])
+      xs1 <- colnames(Xmat)[which(input_mat[i, ] == 1)]
       xs <- paste(xs1, collapse = "+")
       form <- paste("Yvec ~ 1 +", xs, sep = "")
       fit <- lm(form, data = all_dat)
@@ -121,7 +121,7 @@ bms_post_sim <- function(input_mat, Xmat, Yvec, num_sims, g = NULL) {
     for (i in idx) {
       posts[[i]] <- data.frame(matrix(rep(input_mat[i, ], num_sims),
                                       nrow = num_sims, ncol = num_x, byrow = T))
-      names(posts[[i]]) <- names(Xmat)
+      names(posts[[i]]) <- colnames(Xmat)
       posts[[i]][posts[[i]] == 0] <- NA
       if (length(allMods[[(i + num_models)]]) == 1) {
         posts[[i]][, which(input_mat[i, ] == 1)] <- LearnBayes::rmt(num_sims,
@@ -155,7 +155,7 @@ bms_post_sim <- function(input_mat, Xmat, Yvec, num_sims, g = NULL) {
     # draws for coefficients from all other models are mvt's
     # obtain posterior moments
     for (i in idx){
-      xs1 <- names(Xmat[which(input_mat[i, ] == 1)])
+      xs1 <- colnames(Xmat)[which(input_mat[i, ] == 1)]
       xs <- paste(xs1, collapse = "+")
       form <- paste("Yvec ~ 1 +", xs, sep = "")
       fit <- lm(form, data = all_dat)
@@ -167,7 +167,7 @@ bms_post_sim <- function(input_mat, Xmat, Yvec, num_sims, g = NULL) {
     for (i in idx) {
       posts[[i]] <- data.frame(matrix(rep(input_mat[i, ], num_sims),
                                       nrow = num_sims, ncol = num_x, byrow = T))
-      names(posts[[i]]) <- names(Xmat)
+      names(posts[[i]]) <- colnames(Xmat)
       posts[[i]][posts[[i]] == 0] <- NA
       if (length(allMods[[(i + num_models)]]) == 1) {
         posts[[i]][, which(input_mat[i, ] == 1)] <- LearnBayes::rmt(num_sims,
@@ -252,7 +252,7 @@ sim.post.fun <- function(input.mat, Xmat, Yvec, num.sims) {
     }
     names(posts) <- names.posts
     for (i in 1:num.models) {
-        xs1 <- names(Xmat[which(input.mat[i, ] == 1)])
+        xs1 <- colnames(Xmat)[which(input.mat[i, ] == 1)]
         xs <- paste(xs1, collapse = "+")
         form <- paste("Yvec ~", xs, sep = "")
         fit <- lm(form, data = all.dat)
