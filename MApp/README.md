@@ -7,13 +7,14 @@ The `{MAPP}` package provides plotting functions to help researchers digest resu
 - `MApp()` works with lists of posterior draws. 
 - `MApp_IC()` works with approximate posterior model probabilities estimated with AIC or BIC and estimates and standard errors of partial regression coefficients from all individual models. 
 
-#Load `{MAPP}` 
+# Load `{MAPP}` 
 
-`{MAPP}` can be loaded in three steps: 
+`{MAPP}` can be loaded by following these steps: 
 
-1. Download all files in the `MApp/` repository from [here](https://github.com/kbanner14/MApp-Rpackage/tree/master/MApp)
-2. Set your working directory to the location of the `MApp` repository on your computer. 
-3. Run `devtools::load_all(".")` to load the package. Note that you must have the package `devtools` installed (to install run `install.packages("devtools")`).
+1. Install package dependencies: `LearnBayes`, `beanplot`, `dplyr`, and `BMS`. Use `install.packages("packagename")` to install these packages.
+2. Download all files in the `MApp-Rpackage/` repository from the _Download Zip_ button above.
+3. Set your working directory to the location of the `MApp-Rpackage` repository on your computer. 
+4. Run `devtools::load_all("MApp/.")` to load the package. Note that you must have the package `devtools` installed (to install `devtools`, run `install.packages("devtools")`).
 
 # Use `{MAPP}`
 
