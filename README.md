@@ -14,7 +14,7 @@ The package `{MAPP}` is contained in the directory `MApp\` within this repositor
 1. Install package dependencies: `LearnBayes`, `beanplot`, `dplyr`, and `BMS`. Use `install.packages("packagename")` to install these packages.
 2. Download all files in the `MApp-Rpackage` repository from the _Download Zip_ button on the right hand side of the screen 
 3. Set your working directory to the location of the `MApp-Rpackage` repository on your computer. 
-4. Run `devtools::load_all("MApp/.")` to load the package. Note that you must have the package `devtools` installed (to install `devtools`, run `install.packages("devtools")`).
+4. Run `devtools::load_all("MApp/.")` to load the package. Note that you must have the packages `devtools` and `roxygen2` installed (to install, run `install.packages(c("devtools", "roxygen2"))`).
 
 # Use `{MAPP}`
 
