@@ -120,21 +120,17 @@ bms_post_sim <- function(input_mat, Xmat, Yvec, num_sims, g = NULL) {
     # simulate posterior draws according to moments
     for (i in idx) {
       posts[[i]] <- data.frame(matrix(rep(input_mat[i, ], num_sims),
-                                      nrow = num_sims, ncol = num_x, byrow = T))
+                                      nrow = num_sims, 
+                                      ncol = num_x, 
+                                      byrow = T))
       names(posts[[i]]) <- colnames(Xmat)
       posts[[i]][posts[[i]] == 0] <- NA
-      if (length(allMods[[(i + num_models)]]) == 1) {
-        posts[[i]][, which(input_mat[i, ] == 1)] <- LearnBayes::rmt(num_sims,
-                                                                    df = N - length(which(input_mat[i, ] == 1)) - 1,
-                                                                    S = allMods[[i + num_models]],
-                                                                    mean = allMods[[i]])
-      } else {
-        posts[[i]][, which(input_mat[i, ] == 1)] <- LearnBayes::rmt(num_sims,
-                                                                    df = N - length(which(input_mat[i, ] == 1)) - 1,
-                                                                    S = allMods[[i + num_models]],
-                                                                    mean = allMods[[i]])
-      }
-    }
+      num_vars <- length(which(input_mat[i, ] == 1))
+      var_idx <- which(input_mat[i, ] == 1)
+      posts[[i]][, var_idx] <- LearnBayes::rmt(num_sims, df = N - num_vars - 1,
+                                                S = allMods[[i + num_models]],
+                                                mean = allMods[[i]])  
+         }
 
   } else {
 
@@ -149,7 +145,9 @@ bms_post_sim <- function(input_mat, Xmat, Yvec, num_sims, g = NULL) {
     # Draws from coefficients from null model are 0
 
     posts[[idx_null]] <- data.frame(matrix(rep(input_mat[idx_null, ], num_sims),
-                                           nrow = num_sims, ncol = num_x, byrow = T))
+                                           nrow = num_sims, 
+                                           ncol = num_x, 
+                                           byrow = T))
     posts[[idx_null]][posts[[idx_null]] == 0] <- NA
 
     # draws for coefficients from all other models are mvt's
@@ -166,194 +164,149 @@ bms_post_sim <- function(input_mat, Xmat, Yvec, num_sims, g = NULL) {
     # simulate posterior draws according to moments
     for (i in idx) {
       posts[[i]] <- data.frame(matrix(rep(input_mat[i, ], num_sims),
-                                      nrow = num_sims, ncol = num_x, byrow = T))
+                                      nrow = num_sims, 
+                                      ncol = num_x, 
+                                      byrow = T))
       names(posts[[i]]) <- colnames(Xmat)
       posts[[i]][posts[[i]] == 0] <- NA
-      if (length(allMods[[(i + num_models)]]) == 1) {
-        posts[[i]][, which(input_mat[i, ] == 1)] <- LearnBayes::rmt(num_sims,
-                                                                    df = N - length(which(input_mat[i, ] == 1)) - 1,
-                                                                    S = allMods[[i + num_models]],
-                                                                    mean = allMods[[i]])
-      } else {
-        posts[[i]][, which(input_mat[i, ] == 1)] <- LearnBayes::rmt(num_sims,
-                                                                    df = N - length(which(input_mat[i, ] == 1)) - 1,
-                                                                    S = allMods[[i + num_models]],
-                                                                    mean = allMods[[i]])
-      }
+      num_vars <- length(which(input_mat[i, ] == 1))
+      var_idx <- which(input_mat[i, ] == 1)
+      posts[[i]][, var_idx] <- LearnBayes::rmt(num_sims, df = N - num_vars - 1,
+                                                S = allMods[[i + num_models]],
+                                                mean = allMods[[i]])
     }
 
   }
-
-
+  
   return(posts)
 }
 
-
-cov.fun <- function(lmObject, g = NULL, ...) {
-  R2 <- summary(lmObject)$r.squared
-  XtXinv <- summary(lmObject)$cov.unscaled
-  N <- dim(lmObject$model)[1]
-  if(is.null(g))
-    g <- N
-  shrink <- g/(1+g)
-  y <- as.matrix(lmObject$model[, 1])
-  ybar <- mean(y)
-  ymybar <- y - ybar
-  constant <- as.numeric((t(ymybar) %*% (ymybar)/(N - 3)) * shrink * (1 - (shrink * R2)))
-  cov <- constant * XtXinv
-  return(cov[-1, -1])
-}
-
-#' @title Compute analytical posterior means
-#'
-#' @description Compute posterior means for an individual regression model after
-#'   model averaging. Posterior means are generated assuming model averaging
-#'   with Zellner's \eqn{g}-prior [add citation here]. If no value of \eqn{g} is
-#'   specified, the unit information prior (g = N) is assumed. placed on the
-#'   regression parameters.
-#'
-#' @param lmObject A lm object
-#' @return The posterior mean for the individual\code{lm} object.
-mean.fun <- function(lmObject, g = NULL,...){
-    N <- dim(lmObject$model)[1]
-    if(is.null(g))
-      g <- N
-    shrink <- g/(g + 1)
-    betas <- shrink * coef(lmObject)
-    return(betas[-1])
-}
-
-#' @title Simulate draws from posterior distributions of partial regression
-#'   coefficients.
+#' @title Generate individual and MA posterior distirbuitons 
 #' @family MApp functions
 #' @description Simulate draws from individual posterior distributions for all
-#'   models in the model set. Posteriors are simulated assuming the unit
-#'   information formulation (g = N) of the g-prior was used in the model
-#'   averaging.
-#' @param input.mat A matrix defining the model set.
-#' @param Xmat The numeric p by n X matrix for the regression using all p
-#'   covariates.
-#' @param Yvec The numeric vector of responses.
-#' @param num.sims The number of draws to simulate.
-#' @return A list of simulated posterior distributions for all partial
-#'   regression coefficients for each model considered.
-sim.post.fun <- function(input.mat, Xmat, Yvec, num.sims) {
-    # Function to simulate draws from MVt for individual model
-    # posteriors, cov.fun and mean.fun must be loaded.
-    all.dat <- data.frame(Yvec, Xmat)
-    num.x <- dim(Xmat)[2]
-    num.models <- dim(input.mat)[1]
-    allMods <- as.list(1:(2 * num.models))
-    posts <- as.list(1:num.models)
-    names.posts <- rep(NA, num.models)
-    N <- dim(all.dat)[1]
-    for (j in 1:num.models) {
-        names.posts[j] <- paste("M", j, sep = "_")
-    }
-    names(posts) <- names.posts
-    for (i in 1:num.models) {
-        xs1 <- colnames(Xmat)[which(input.mat[i, ] == 1)]
-        xs <- paste(xs1, collapse = "+")
-        form <- paste("Yvec ~", xs, sep = "")
-        fit <- lm(form, data = all.dat)
-        allMods[[i + (num.models)]] <- cov.fun(fit)
-        allMods[[i]] <- mean.fun(fit)
+#'   models in the model set. Posteriors are simulated assuming a
+#'    g-prior was used on the coefficients. Use individual posterior draws and
+#' 	 posterior model probabilities to sample from the MA posterior distribuiton.
+#' @param x a \code{bma} object generated by \code{bms()}
+#' @param num_draws The size of the model averaged posterior distribution.
+#' @param mod_names a vector of the model names
+#' @return \code{list}. The first element is the model averaged posterior 
+#' 		distribuitons for the partial regression coefficients 
+#'		associated with each explanatory variable and the number 
+#' 		of samples taken from each model \eqn{\mathcal{M}}. 
+MApost_bms_sim <- function(x, num_draws = 5000, 
+                           mod_names = NULL, ...) {
+  # function to genereate individual and MA posterior distributions 
+  # for coefficients 
+  
+  # pull off informaiton from bms
+  results <- data.frame(coef(x))
+  Yvec <- x$X.data[,1]
+  Xmat <- x$X.data[,-1]
+  all_dat <- data.frame(Yvec, Xmat)
+  N <- dim(all_dat)[1]
+  
+  # Create input matrix to work in simulation function. Rows ordered w.r.t
+  # posterior model probability
+  post_means <- x$topmod$betas()
+  inmat <- post_means
+  inmat[inmat != 0] <- 1
+  inmat <- t(inmat)
+  weights <- sort(pmp.bma(x)[,1], decreasing = T)
+  g <- x$gprior.info$g
+  K <- dim(inmat)[1]
+  if (is.null(mod_names))
+    mod_names <- paste("M", seq(1:K), sep = "")
+     
+  var_names <- colnames(Xmat)
+  
+  # create MA posterior for all coefficients simultaneously
+  # generate samps per model using multinomial distribution
+  
+  samps <- rmultinom(num_draws, 1, weights)
+  samps_mod <- apply(samps, 1, sum)
+  names(samps_mod) <- mod_names
+  
+  index_samp <-which(samps_mod != 0 ) 
+  num_models <- length(index_samp)
+  allMods <- as.list(1:(2 * num_models))
+  
+  # check if null model is one of the sampled models
+  inmat <- inmat[index_samp,]
+  if(sum(apply(inmat,1, sum) == 0) == 0){
+  	idx <- which(apply(inmat, 1, sum) != 0)
+    # draws for coefficients from all other models are mvt's
+    # obtain posterior moments
+    for (i in idx){
+      xs1 <- colnames(Xmat)[which(inmat[i, ] == 1)]
+      xs <- paste(xs1, collapse = "+")
+      form <- paste("Yvec ~ 1 +", xs, sep = "")
+      fit <- lm(form, data = all_dat)
+      allMods[[i + (num_models)]] <- cov_fun(fit, g)
+      allMods[[i]] <- mean_fun(fit, g)
     }
 
-    for (i in 1:num.models) {
-        posts[[i]] <- data.frame(matrix(rep(input.mat[i, ], num.sims),
-                                        nrow = num.sims, ncol = num.x, byrow = T))
-        names(posts[[i]]) <- names(Xmat)
-        posts[[i]][posts[[i]] == 0] <- NA
-        if (length(allMods[[(i + num.models)]]) == 1) {
-            posts[[i]][, which(input.mat[i, ] == 1)] <- LearnBayes::rmt(num.sims,
-            	df = N - length(which(input.mat[i, ] == 1)) - 1,
-              S = allMods[[i + num.models]],
-              mean = allMods[[i]])
-        } else {
-            posts[[i]][, which(input.mat[i, ] == 1)] <- LearnBayes::rmt(num.sims,
-            	df = N - length(which(input.mat[i, ] == 1)) - 1,
-              S = allMods[[i + num.models]],
-              mean = allMods[[i]])
-        }
+    MA_posts <- data.frame()    
+    for(m in index_samp){ 
+    	draws <- data.frame(matrix(rep(inmat[m, ], samps_mod[m]),
+                                      nrow = samps_mod[m], 
+                                      ncol = ncol(inmat), 
+                                      byrow = T))
+        num_vars <- length(which(inmat[m, ] == 1))
+        size_vcov <- length(allMods[[(m + num_models)]])
+        var_idx <- which(inmat[m, ] == 1)
+        draws[,var_idx] <- LearnBayes::rmt(samps_mod[m], df = N - num_vars - 1,
+        										S = allMods[[(m + num_models)]],
+        										mean = allMods[[m]])
+        MA_posts <- rbind(MA_posts, draws)
+          }
+    
+    names(MA_posts) <- var_names
+    
+
+  } else {
+	
+    idx <- which(apply(inmat,1, sum) !=0)
+    idx_null <- which(apply(inmat, 1, sum) == 0)
+    
+    # obtain posterior moments for each of the models
+    
+    allMods[[idx_null + (num_models)]] <- 0
+    allMods[[idx_null]] <- 0
+
+    # draws for coefficients from all other models are mvt's
+    # obtain posterior moments
+    for (i in idx){
+      xs1 <- colnames(Xmat)[which(inmat[i, ] == 1)]
+      xs <- paste(xs1, collapse = "+")
+      form <- paste("Yvec ~ 1 +", xs, sep = "")
+      fit <- lm(form, data = all_dat)
+      allMods[[i + (num_models)]] <- cov_fun(fit, g)
+      allMods[[i]] <- mean_fun(fit, g)
     }
-    return(posts)
+
+   MA_posts <- data.frame(matrix(rep(0, samps_mod[idx_null]*length(var_names)),
+   									  nrow = samps_mod[idx_null], 
+   									  ncol = length(var_names)))    
+    for(m in index_samp[-idx_null]){ 
+    	draws <- data.frame(matrix(rep(inmat[m, ], samps_mod[m]),
+                                      nrow = samps_mod[m], 
+                                      ncol = ncol(inmat), 
+                                      byrow = T))
+        num_vars <- length(which(inmat[m, ] == 1))
+        size_vcov <- length(allMods[[(m + num_models)]])
+        var_idx <- which(inmat[m, ] == 1)
+        draws[,var_idx] <- LearnBayes::rmt(samps_mod[m], df = N - num_vars - 1,
+        										S = allMods[[(m + num_models)]],
+        										mean = allMods[[m]])
+        MA_posts <- rbind(MA_posts, draws)
+          }
+    
+    names(MA_posts) <- var_names
+ 
+  }
+
+  return(list(MA_posts, samps_mod))
 }
 
-#' @title Convert a list of posterior samples into a long data frame.
-#' @description This function will create a long data frame to be used as an
-#'   input in \code{\link{MApost.fun}}.
-vec.fun2 <- function(post.list, coef) {
-    # Function to convert from wide to long format by model for each coef
 
-    num.vars <- dim(post.list[[1]])[2]
-    num.mods <- length(post.list)
-    num.draws <- dim(post.list[[1]])[1]
-    len <- num.draws * num.mods
-    vector <- rep(NA, len)
-    for (i in c(0, seq(1:(num.mods - 1)))) {
-        vector[(i * (num.draws) + 1):((i + 1) * num.draws)] <- post.list[[i + 1]][, coef]
-    }
-    return(vector)
-}
-
-#' @title Create MA distribution using draws from individual models
-#'
-#' @description Sample from individual posteriors to generate an approximate
-#'   model averaged posterior distribution according to the unit information
-#'   prior.
-#' @param post.dataframe A data frame in long format with posterior draws of a
-#'   parameter of interest from all models in the model set.
-#'   \code{\link{vec.fun2}} will convert a list of posterior samples into a long
-#'   data frame.
-#' @param models An integer specifying the number of models in the model set
-#' @param weight A vector of posterior model weights of length \code{models}
-#' @param num.draws An integer specifying the number of draws from each
-#'   posterior vector.
-MApost.fun <- function(post.dataframe, models, weight, num.draws) {
-
-    post.dataframe$Include <- as.numeric(is.na(post.dataframe$Post.Vec) == FALSE)
-    keep <- with(subset(post.dataframe, Include == 1), unique(Model))
-    idx.in <- rep(NA, length(keep))
-    for (i in 1:length(keep)) {
-        idx.in[i] <- which(unique(post.dataframe$Model) == keep[i])
-    }
-    tot.w <- sum(weight[idx.in])
-    weight[-idx.in] <- 0
-    if (tot.w == 0) {
-        weight <- rep(0, models)
-    } else {
-        weight <- weight / tot.w
-    }
-    samps.per.model <- round(weight * num.draws, 0)
-
-    # Keep only those that have nonzero samps associated with them.
-
-    idx.in <- idx.in[which(samps.per.model[idx.in] != 0)]
-    post.samps <- sum(samps.per.model)
-    if (post.samps == 0) {
-        MApost <- rep(NA, num.draws)
-    } else {
-        MApost <- rep(NA, post.samps)
-    }
-    if (post.samps == 0) {
-        post.dataframe[, 1] <- 0
-        MApost <- data.frame(MApost, rep("MA", num.draws))
-        names(MApost) <- c("Post.Vec", "Model")
-        Allpost <- rbind(MApost, post.dataframe[, 1:2])
-        return(Allpost)
-    } else {
-        end <- 0
-        for (i in idx.in) {
-            MApost[(end + 1):(sum(samps.per.model[1:i]))] <- sample(
-            		post.dataframe[(((i - 1) * num.draws) + 1):(i * num.draws), 1],
-            		samps.per.model[i],
-            		rep = F)
-            end <- sum(samps.per.model[1:i])
-        }
-        MApost <- data.frame(MApost, rep("MA", post.samps))
-        names(MApost) <- c("Post.Vec", "Model")
-        Allpost <- rbind(MApost, post.dataframe[, 1:2])
-        return(Allpost)
-    }
-}
