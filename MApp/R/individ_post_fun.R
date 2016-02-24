@@ -229,16 +229,17 @@ MApost_bms_sim <- function(x, num_draws = 5000,
   
   index_samp <-which(samps_mod != 0 ) 
   num_models <- length(index_samp)
-  allMods <- as.list(1:(2 * num_models))
+
   
   # check if null model is one of the sampled models
-  inmat <- inmat[index_samp,]
-  if(sum(apply(inmat,1, sum) == 0) == 0){
-  	idx <- which(apply(inmat, 1, sum) != 0)
+  inmat_samp <- inmat[index_samp,]
+  if(sum(apply(inmat_samp,1, sum) == 0) == 0){
+    allMods <- as.list(1:(2 * num_models))
+  	idx <- which(apply(inmat_samp, 1, sum) != 0)
     # draws for coefficients from all other models are mvt's
     # obtain posterior moments
     for (i in idx){
-      xs1 <- colnames(Xmat)[which(inmat[i, ] == 1)]
+      xs1 <- colnames(Xmat)[which(inmat_samp[i, ] == 1)]
       xs <- paste(xs1, collapse = "+")
       form <- paste("Yvec ~ 1 +", xs, sep = "")
       fit <- lm(form, data = all_dat)
@@ -246,38 +247,41 @@ MApost_bms_sim <- function(x, num_draws = 5000,
       allMods[[i]] <- mean_fun(fit, g)
     }
 
-    MA_posts <- data.frame()    
+    MA_posts <- data.frame()
+    j = 1
     for(m in index_samp){ 
     	draws <- data.frame(matrix(rep(inmat[m, ], samps_mod[m]),
                                       nrow = samps_mod[m], 
                                       ncol = ncol(inmat), 
                                       byrow = T))
         num_vars <- length(which(inmat[m, ] == 1))
-        size_vcov <- length(allMods[[(m + num_models)]])
         var_idx <- which(inmat[m, ] == 1)
         draws[,var_idx] <- LearnBayes::rmt(samps_mod[m], df = N - num_vars - 1,
-        										S = allMods[[(m + num_models)]],
-        										mean = allMods[[m]])
+        										S = allMods[[(j + num_models)]],
+        										mean = allMods[[j]])
         MA_posts <- rbind(MA_posts, draws)
-          }
+        
+        j = j + 1
+        
+        }
     
     names(MA_posts) <- var_names
     
 
   } else {
 	
-    idx <- which(apply(inmat,1, sum) !=0)
-    idx_null <- which(apply(inmat, 1, sum) == 0)
-    
+    idx <- which(apply(inmat_samp,1, sum) !=0)
+    idx_null <- which(apply(inmat_samp, 1, sum) == 0)
+    allMods <- as.list(1:(2 * length(idx)))
+    inmat_samp <- inmat_samp[-idx_null,]
     # obtain posterior moments for each of the models
-    
-    allMods[[idx_null + (num_models)]] <- 0
-    allMods[[idx_null]] <- 0
+    # allMods[[idx_null + (num_models)]] <- 0
+    # allMods[[idx_null]] <- 0
 
     # draws for coefficients from all other models are mvt's
     # obtain posterior moments
-    for (i in idx){
-      xs1 <- colnames(Xmat)[which(inmat[i, ] == 1)]
+    for (i in 1:length(idx)){
+      xs1 <- colnames(Xmat)[which(inmat_samp[i, ] == 1)]
       xs <- paste(xs1, collapse = "+")
       form <- paste("Yvec ~ 1 +", xs, sep = "")
       fit <- lm(form, data = all_dat)
@@ -287,20 +291,21 @@ MApost_bms_sim <- function(x, num_draws = 5000,
 
    MA_posts <- data.frame(matrix(rep(0, samps_mod[idx_null]*length(var_names)),
    									  nrow = samps_mod[idx_null], 
-   									  ncol = length(var_names)))    
+   									  ncol = length(var_names)))
+    j <- 1
     for(m in index_samp[-idx_null]){ 
     	draws <- data.frame(matrix(rep(inmat[m, ], samps_mod[m]),
                                       nrow = samps_mod[m], 
                                       ncol = ncol(inmat), 
                                       byrow = T))
         num_vars <- length(which(inmat[m, ] == 1))
-        size_vcov <- length(allMods[[(m + num_models)]])
         var_idx <- which(inmat[m, ] == 1)
         draws[,var_idx] <- LearnBayes::rmt(samps_mod[m], df = N - num_vars - 1,
-        										S = allMods[[(m + num_models)]],
-        										mean = allMods[[m]])
+        										S = allMods[[(j + num_models)]],
+        										mean = allMods[[j]])
         MA_posts <- rbind(MA_posts, draws)
-          }
+        j <- j + 1
+        }
     
     names(MA_posts) <- var_names
  

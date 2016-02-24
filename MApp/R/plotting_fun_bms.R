@@ -147,11 +147,11 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
   # Only make plots for coefficients that appeared
 
   include_beans <- c(1:p)
-  num_null <- sum((MaxMin[, 1] & MaxMin[, 2]) == 0)
+  num_null <- sum(MaxMin[, 1] == 0 & MaxMin[, 2] == 0)
   if (num_null == 0) {
     include_beans <- include_beans
   } else {
-    include_beans <- include_beans[-which((MaxMin[, 1] & MaxMin[, 2]) == 0)]
+    include_beans <- include_beans[-which(MaxMin[,2] == 0 & MaxMin[,1] == 0)]
   }
 
   # only display included coefficients in SD table
