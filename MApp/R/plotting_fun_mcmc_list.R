@@ -83,11 +83,11 @@ MApp <- function(mcmc.list, g, weights, PIP, plot.wind, max.display = NULL,
     # Only make plots for coefficients that appeared
 
     include.beans <- c(1:p)
-    num.null <- sum((MaxMin[, 1] & MaxMin[, 2]) == 0)
+    num.null <- sum((MaxMin[, 1] & MaxMin[, 2] == 0))
     if (num.null == 0) {
         include.beans <- include.beans
     } else {
-        include.beans <- include.beans[-which((MaxMin[, 1] & MaxMin[, 2]) == 0)]
+        include.beans <- include.beans[-which((MaxMin[, 1] & MaxMin[, 2] == 0))]
     }
 
 

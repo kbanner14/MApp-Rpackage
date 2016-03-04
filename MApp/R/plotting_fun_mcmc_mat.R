@@ -29,6 +29,9 @@ MApp_MCMC <- function(mcmc_draws, plot_wind,
                       max_display = NULL,
                       mod_names = NULL,
                       include_coef = NULL, ...) {
+  
+  # allow this function to use pipe without loading dplyr
+  `%>%` <- magrittr::`%>%`
   # number of models
   p <- ncol(mcmc_draws) - 1
   K <- length(unique(mcmc_draws[,1]))
@@ -101,11 +104,11 @@ MApp_MCMC <- function(mcmc_draws, plot_wind,
   # Only make plots for coefficients that appeared
 
   include_beans <- c(1:p)
-  num_null <- sum((MaxMin[, 1] & MaxMin[, 2]) == 0)
+  num_null <- sum((MaxMin[, 1] & MaxMin[, 2] == 0))
   if (num_null == 0) {
     include_beans <- include_beans
   } else {
-    include_beans <- include_beans[-which((MaxMin[, 1] & MaxMin[, 2]) == 0)]
+    include_beans <- include_beans[-which((MaxMin[, 1] & MaxMin[, 2] == 0))]
   }
 
   # only display included coefficients in SD table
@@ -117,15 +120,15 @@ MApp_MCMC <- function(mcmc_draws, plot_wind,
 
   if (length(include_coef) == p) {
     for (i in include_coef){
-      sds <- coef_frames[[i]] %>% group_by(model) %>%
-        summarise(SD = round(sd(post_vec, na.rm = T), 4))
+      sds <- coef_frames[[i]] %>% dplyr::group_by(model) %>%
+        dplyr::summarise(SD = round(sd(post_vec, na.rm = T), 4))
       SD[i, ] <- t(sds[,"SD"])
     }
 
   } else {
     for (i in include_coef) {
-      sds <- coef_frames[[i]] %>% group_by(model) %>%
-        summarise(SD = round(sd(post_vec, na.rm = T), 4))
+      sds <- coef_frames[[i]] %>% dplyr::group_by(model) %>%
+        dplyr::summarise(SD = round(sd(post_vec, na.rm = T), 4))
       SD[i, ] <- t(sds[,"SD"])
     }
     test.in <- apply(SD, 1, sum, na.rm = T)

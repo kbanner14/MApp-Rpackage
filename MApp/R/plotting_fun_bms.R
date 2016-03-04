@@ -26,7 +26,9 @@
 MApp_bms <- function(x, plot_wind, num_sims = 1000,
                         max_display = NULL, mod_names = NULL,
                         include_coef = NULL, ...) {
-
+  # define pipe 
+  `%>%` <- magrittr::`%>%`
+  
   # extract what we need from the bms object
   results <- data.frame(coef(x))
   PIP <- results[order(results$Idx), ][, 1]
@@ -163,16 +165,16 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
 
   if (length(include_coef) == p) {
     for (i in include_coef){
-      sds <- coef_frames[[i]] %>% group_by(Model) %>%
-        summarise(SD = round(sd(Post.Vec, na.rm = T), 4))
+      sds <- coef_frames[[i]] %>% dplyr::group_by(Model) %>%
+        dplyr::summarise(SD = round(sd(Post.Vec, na.rm = T), 4))
       SD[i, ] <- t(sds[,"SD"])
 
     }
   } else {
     j = 1
     for (i in include_coef) {
-      sds <- coef_frames[[i]] %>% group_by(Model) %>%
-        summarise(SD = round(sd(Post.Vec, na.rm = T), 4))
+      sds <- coef_frames[[i]] %>% dplyr::group_by(Model) %>%
+        dplyr::summarise(SD = round(sd(Post.Vec, na.rm = T), 4))
       SD[j, ] <- t(sds[,"SD"])
       j = j+1
     }
