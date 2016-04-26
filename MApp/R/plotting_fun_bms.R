@@ -188,9 +188,14 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
 
   dimnames(SD)[[1]] <- c(var_names[include_coef], "PMP")
 
+  # Add and make sure PIP's are not rounded to exactly 0.
+  disp.PEP <- round(1 - PIP, 3)
+  disp.PEP <- ifelse(disp.PEP == 0, "<0.000", as.character(disp.PEP))
+  # make vertical adjust for larger plots
+  vadjust <- ifelse(max_display <= 8, 0.35, 0.05)
+  
   # make the beanplot
-
-  par(mfrow = c(plot_wind), las = 1)
+  par(mfrow = c(plot_wind), las = 1, mar = c(2.1,3.1,3.1,.5))
   for (i in include_coef) {
 
     # Initilize plot
@@ -218,7 +223,9 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
                        log = "")
 
     # Add MA posterior mean line
-    MA.mean <- mean(subset(coef_frames[[i]], Model == "MA")$Post.Vec, na.rm = T)
+    ma.mean <- subset(coef_frames[[i]], Model =="MA")$Post.Vec
+    ma.mean[is.na(ma.mean)] <- 0
+    MA.mean <- mean(ma.mean)
     segments(MA.mean, 1, MA.mean, (max_display + 1.35), col = "black", lty = 4)
 
     # Add MA bean
@@ -250,25 +257,24 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
          cex = 1,
          pos = 1)
 
-    # Add and make sure PIP's are not rounded to exactly 0.
-    disp.PEP <- round(1 - PIP, 3)
-    disp.PEP <- ifelse(disp.PEP == 0, "<0.000", as.character(disp.PEP))
-    vadjust <- ifelse(max_display <= 10, 0.35, 0)
-    text(mean(MaxMin[i, ]),
-         vadjust,
-         paste("Pr(beta_",
-               paste(include_beans[i],
-                     paste(".MA = 0",
-                           paste("|y)",
-                                 disp.PEP[i],
-                                 sep = "="))),
-               sep = ""),
-         col = "black",
-         cex = 1,
-         pos = 3)
+    # Add PEP's
+    if (disp.PEP[i] == "< 0.000") {
+      text(mean(MaxMin[i, ]),
+           vadjust,
+           bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y )"~.(disp.PEP[i])), 
+           col = "black",
+           cex = 1,
+           pos = 3)
+    } else {
+      text(mean(MaxMin[i, ]),
+           vadjust,
+           bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y ) ="~.(disp.PEP[i])), 
+           col = "black",
+           cex = 1,
+           pos = 3)
+    }
     text(MaxMin[i, 2], (max_display + 1.5),
-         paste("Sum PMP", round(sum(weights_raw), 3),
-               sep = "="),
+         bquote(sum(w[j], j = "j=1", .(nrow(inmat))) == .(round(sum(weights_raw), 3))),
          col = "black",
          cex = 1,
          pos = 2)
