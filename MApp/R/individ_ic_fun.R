@@ -36,11 +36,28 @@ pmp_BIC <- function(BIC_vec, mod_prior){
 #' @param coef_mat A \eqn{K} by \eqn{p} matrix of maximum likeilhood
 #'   estimates for the partial regression coefficinets from all individual
 #'   models considered.
+#' @param inmat A matrix defining which variables are in each model.
+#' @param w_plus A logical statement defining which type of MA to use. 
+#'   Default is false, which allows all models defined in \code{inmat} to 
+#'   be used in the averaging for each variable. If set to \code{TRUE}, MA
+#'   estimates will be made using only the models for which the coefficient
+#'   asssociated with each variable is not set to exactly zero. 
+#'   Weights are normalized conditional on the models that meet this criterea. 
 #' @return The point estimate of the model averaged partial regression
 #'   coefficients.
-est_MA <- function(weights, coef_mat){
+est_MA <- function(weights, coef_mat, inmat, w_plus = FALSE){
+  inmat <- cbind(rep(1,dim(inmat)[1]), inmat)
+  if(w_plus == FALSE){
   out <- coef_mat*weights
   out <- apply(out, 2, sum)
+  } else {
+    out <- rep(NA, dim(coef_mat)[2])
+    for(i in 1:dim(coef_mat)[2]){
+      mods <- which(inmat[,i] == 1)
+      w_norm <- weights[mods]/(sum(weights[mods]))
+      out[i] <- coef_mat[mods, i] %*% w_norm
+    }
+  }
   return(out)
 }
 
@@ -54,7 +71,7 @@ est_MA <- function(weights, coef_mat){
 #' @param coef_mat A \eqn{K} by \eqn{p} matrix of maximum likeilhood
 #'   estimates for the partial regression coefficinets from all individual
 #'   models considered.
-#'@param ses_mat A \eqn{K} by \eqn{p} matrix of maximum likelihood estimates
+#'@param se_mat A \eqn{K} by \eqn{p} matrix of maximum likelihood estimates
 #'  of standard errors for the partial regression coefficients from all
 #'  individual models considered.
 #' @param inmat A matrix with dimesions \eqn{k \times p} specifying which
@@ -62,31 +79,35 @@ est_MA <- function(weights, coef_mat){
 #'   to the order of \code{coef_mat} a \code{ses_mat} (it is recommended, but not
 #'   required to sort these in decreasing posterior model probability).
 #' @param w_plus A logical statement to pick the version of the formula
-#'   to use. LIST FORMULAE here**... Default is \code{TRUE}, which does the
+#'   to use. LIST FORMULAE here**... Default is \code{FALSE}, which does the
 #'   computation over the set of models for which the variable associated
 #'   with the coefficient is included.
 #' @return The point estimate of the model averaged partial regression
 #'   coefficients.
-se_MA <- function(weights, coef_mat, ses_mat, inmat, w_plus = TRUE){
-  ses_mat2 <- ses_mat^2
-  ests_ma <- est_MA(weights, coef_mat)
+se_MA <- function(weights, coef_mat, se_mat, inmat, w_plus = FALSE){
+  
+  ests_ma <- est_MA(weights, coef_mat, inmat, w_plus = w_plus)
   inmat <- cbind(rep(1,dim(inmat)[1]), inmat)
-
+  ests_mat <- matrix(rep(ests_ma, dim(coef_mat)[1]),
+                       nrow = dim(coef_mat)[1], byrow = T)
+  var_mat <- se_mat^2
   if(w_plus == TRUE){
-    ests_mat <- matrix(0, dim(coef_mat)[1], dim(coef_mat)[2])
-    for(ndx in 1:dim(coef_mat)[2]){
-      ests_mat[which(inmat[,ndx] == 1), ndx] <- ests_ma[ndx]
+    out <- numeric(dim(coef_mat)[2])
+    dev_mat <- matrix(0, nrow = dim(coef_mat)[1], ncol = dim(coef_mat)[2])
+    for(i in 1:dim(coef_mat)[2]){
+      mods <- which(inmat[,i] == 1)
+      w_norm <- weights[mods]/(sum(weights[mods]))
+      ests_mat[mods, i] <- 0
+      dev_mat[,i] <- (coef_mat[,i] - ests_mat[,i])^2
+      out[i] <- w_norm%*%sqrt(var_mat[mods,i] + dev_mat[mods,i])
     }
   } else {
-    ests_mat <- matrix(rep(ests_ma, dim(coef_mat)[1]),
-                       nrow = dim(coef_mat)[1], byrow = T)
-  }
-
-  dev_mat <- (coef_mat - ests_mat)^2
-  out <- weights*sqrt(ses_mat2 + dev_mat)
-  return(apply(out, 2, sum))
+    dev_mat <- (coef_mat - ests_mat)^2
+    out <- weights%*%sqrt(var_mat + dev_mat)
+    }
+  
+  return(out)
 }
-
 
 #' @title Compute individual and model averaged results using the AIC
 #'   and BIC approximations.
@@ -165,8 +186,8 @@ approx_pmp <- function(inmat, Xmat, Yvec, mod_names = NULL,
   names(se_mat) <- paste("SE", c("Int",names(Xmat[which(inmat[idx_full,]==1)])),
                          sep = "_")
 
-  ma_estsAIC <- est_MA(pmpA,	 coef_mat)
-  ma_estsBIC <- est_MA(pmpB, coef_mat)
+  ma_estsAIC <- est_MA(pmpA, coef_mat, inmat = inmat, w_plus = w_plus)
+  ma_estsBIC <- est_MA(pmpB, coef_mat, inmat = inmat, w_plus = w_plus)
 
   ma_seAIC <- se_MA(pmpA, coef_mat, se_mat, inmat, w_plus)
   ma_seBIC <- se_MA(pmpB, coef_mat, se_mat, inmat, w_plus)
