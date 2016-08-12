@@ -4,6 +4,7 @@ author: "Katharine Banner"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
+      keep_tex: yes
   fig_capation: yes
 vignette: >
   %\VignetteIndexEntry{MApp: Model Averaged posteriors plot}
@@ -13,7 +14,7 @@ vignette: >
 
 #Model averaging of partial regression coefficients
 
-In brief, model averaging was developed as a predictive tool and its use has been recently extended to model averaging of partial regression coefficients across multiple models. The inference drawn from the latter application of model averaging typically results in explanations of "average effects" for each of the coefficients of interest, presenting a unique question, what does "average effect" mean? In the presence of multicollinearity, the interpretations of partial regression coefficients are not constant across all models making "average effects" difficult to understand. `MApp` provides the user with a visual of what goes into model averaged partial regression coefficients. A detailed discussion of the rational behind the `MApp` plot can be found in _Model Averaging Partial Regression Coefficients: Considerations and Practical Guidelines_, @CITATION/WEBSITE. 
+In brief, model averaging was developed as a predictive tool and its use has been recently extended to model averaging of partial regression coefficients across multiple models. The inference drawn from the latter application of model averaging typically results in explanations of "overall effects" for each of the coefficients of interest, presenting a unique question, what does "overall effect" mean? In the presence of multicollinearity, the interpretations of partial regression coefficients are not constant across all models, making "overall effects" difficult to understand. The `MAPP` package provides the user with graphical tools for understanding what goes into model averaged partial regression coefficients. We have developed tools forA detailed discussion of the rational behind the `MApp` plot can be found in Chapter \ref{CH2} (_or cite the EA paper_)
 
 Many applications of model averaging are conducted in the Bayesian perspective and many of our plotting functions in `MApp` are designed to work with posterior draws; a quick introduction to Bayesian model averaging can be found in the `BMS` package vignette (`vignette("BMS")`), @ADD A FEW CITATIONS HERE. POSSIBLY HOETING, LB, AND BA. 
 
@@ -214,9 +215,6 @@ knitr::kable(IC_approx[,c(1,10:13)])
 ```
 
 
-- pull off BIC weights and summary statistics and plot with MApp_IC()
-- explain `x_coefB` and `x_seB`
-- MApp 
 
 ```{r echo = TRUE, fig.width= 8, fig.height=5}
 # BIC weights
@@ -225,5 +223,20 @@ x_seB <- IC_approx[c(2:10), c(11:13)]
 pmpB <- IC_approx[c(3:10),3]
 pmpB
 
-MApp_IC(x_coefB, x_seB, pmpB, inmat, var_names = c("lBody", "lGest", "litter"))
+MApp_AIC(brainData)
+```
+
+
+
+
+- pull off BIC weights and summary statistics and plot with MApp_IC()
+- explain `x_coefB` and `x_seB`
+- MApp
+
+```{r echo = TRUE, fig.width= 8, fig.height=5}
+# BIC weights
+x_coefB <- IC_approx[c(2:10), c(7:9)]
+x_seB <- IC_approx[c(2:10), c(11:13)]
+pmpB <- IC_approx[c(3:10),3]
+pmpB
 ```

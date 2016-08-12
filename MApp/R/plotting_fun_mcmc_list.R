@@ -20,24 +20,25 @@
 #' @param max.display An integer specifying the number of models to display in
 #'   the plotting window.
 #' @param mod.names A vector specifying the names of the models. If left blank,
-#'   models will be named \eqn{M_1, M_2,..., M_K}, where \eqn{M_1} will have the
-#'   largest posterior model probability and \eqn{M_K} has the smallest
+#'   models will be named \eqn{M_1, M_2,..., M_J}, where \eqn{M_1} will have the
+#'   largest posterior model probability and \eqn{M_J} has the smallest
 #'   posterior model probability.
 #' @param include.coef A vector specifying which partial regression coefficients
 #'   to display.
 #' @return The \code{MApp} plot and a table of posterior standard deviations for
 #'   the top \code{max.display} individual models specified, along with the
 #'   posterior standard deviation of the model averaged parameter.
-MApp <- function(mcmc.list, g, weights, PIP, plot.wind, max.display = NULL,
-                   mod.names = NULL, include.coef = NULL, ...) {
-
-    K <- length(mcmc.list)
-    p <- dim(mcmc.list[[1]])[2]  # Number of parameters
-    if (is.null(mod.names))
-        mod.names <- paste("M", seq(1:K), sep = "")
-    names(mcmc.list) <- paste("M", seq(1:K), sep = "")  # Create names for models
-    num.draws <- dim(mcmc.list[[1]])[1]  # draws from each posterior beta vector
-    var.names <- names(mcmc.list[[1]])
+MApp <- function(mcmc_list, plot_wind, max_display = NULL,
+                   mod_names = NULL, include_coef = NULL, ...) {
+  
+    `%>%` <- magrittr::`%>%`
+    K <- length(mcmc_list)
+    p <- dim(mcmc_list[[1]])[2]  # Number of parameters
+    if (is.null(mod_names))
+        mod_names <- paste("M", seq(1:K), sep = "")
+    names(mcmc_list) <- paste("M", seq(1:K), sep = "")  # Create names for models
+    num_draws <- dim(mcmc_list[[1]])[1]  # draws from each posterior beta vector
+    var_names <- names(mcmc_list[[1]])
 
     # Create a data frame for each coefficient estimate and track which model it
     # came from

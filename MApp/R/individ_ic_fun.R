@@ -26,23 +26,23 @@ pmp_BIC <- function(BIC_vec, mod_prior){
 }
 
 #' @title Compute model averaged estimates for partial regression
-#'   coefficinets.
+#'   coefficients.
 #' @description This function computes point estimates for model averaged
-#'   partial regression coefficients using a weighted avearged of maximum
+#'   partial regression coefficients using a weighted averaged of maximum
 #'   likelihood estimates from individual models according to approximate
 #'   posterior model probabilities.
-#' @param weights A vector of approximate posterior model probabilties
+#' @param weights A vector of approximate posterior model probabilities
 #'   (commonly referred to as model weights in the IC literature).
-#' @param coef_mat A \eqn{K} by \eqn{p} matrix of maximum likeilhood
-#'   estimates for the partial regression coefficinets from all individual
+#' @param coef_mat A \eqn{J} by \eqn{p} matrix of maximum likelihood
+#'   estimates for the partial regression coefficients from all individual
 #'   models considered.
 #' @param inmat A matrix defining which variables are in each model.
 #' @param w_plus A logical statement defining which type of MA to use. 
-#'   Default is false, which allows all models defined in \code{inmat} to 
+#'   Default is \code{FALSE}, which allows all models defined in \code{inmat} to 
 #'   be used in the averaging for each variable. If set to \code{TRUE}, MA
 #'   estimates will be made using only the models for which the coefficient
-#'   asssociated with each variable is not set to exactly zero. 
-#'   Weights are normalized conditional on the models that meet this criterea. 
+#'   associated with each variable is not set to exactly zero. 
+#'   Weights are normalized conditional on the models meeting this criterion. 
 #' @return The point estimate of the model averaged partial regression
 #'   coefficients.
 est_MA <- function(weights, coef_mat, inmat, w_plus = FALSE){
@@ -64,24 +64,26 @@ est_MA <- function(weights, coef_mat, inmat, w_plus = FALSE){
 #' @title Compute the standard error for model averaged
 #'   partial regression coefficients.
 #' @description This function computes standard errors for model averaged
-#'   partial regression coefficients using the formula specfied in
+#'   partial regression coefficients using the formula specified in
 #'   Link and Barker 2010 (see also Burhnam and Anderson (2002)).
-#' @param weights A vector of approximate posterior model probabilties
+#' @param weights A vector of approximate posterior model probabilities
 #'   (commonly referred to as model weights in the IC literature).
-#' @param coef_mat A \eqn{K} by \eqn{p} matrix of maximum likeilhood
-#'   estimates for the partial regression coefficinets from all individual
+#' @param coef_mat A \eqn{J} by \eqn{p} matrix of maximum likelihood
+#'   estimates for the partial regression coefficients from all individual
 #'   models considered.
-#'@param se_mat A \eqn{K} by \eqn{p} matrix of maximum likelihood estimates
+#'@param se_mat A \eqn{J} by \eqn{p} matrix of maximum likelihood estimates
 #'  of standard errors for the partial regression coefficients from all
 #'  individual models considered.
-#' @param inmat A matrix with dimesions \eqn{k \times p} specifying which
+#' @param inmat A matrix with dimensions \eqn{J \times p} specifying which
 #'   variables are included in each model. The order of models must correspond
 #'   to the order of \code{coef_mat} a \code{ses_mat} (it is recommended, but not
 #'   required to sort these in decreasing posterior model probability).
-#' @param w_plus A logical statement to pick the version of the formula
-#'   to use. LIST FORMULAE here**... Default is \code{FALSE}, which does the
-#'   computation over the set of models for which the variable associated
-#'   with the coefficient is included.
+#' @param w_plus A logical statement defining which type of MA to use. 
+#'   Default is \code{FALSE}, which allows all models defined in \code{inmat} to 
+#'   be used in the averaging for each variable. If set to \code{TRUE}, MA
+#'   estimates will be made using only the models for which the coefficient
+#'   associated with each variable is not set to exactly zero. 
+#'   Weights are normalized conditional on the models meeting this criterion.
 #' @return The point estimate of the model averaged partial regression
 #'   coefficients.
 se_MA <- function(weights, coef_mat, se_mat, inmat, w_plus = FALSE){
@@ -114,30 +116,32 @@ se_MA <- function(weights, coef_mat, se_mat, inmat, w_plus = FALSE){
 #' @description Create a \code{data.frame} summarizing individual and
 #'   model averaged results for partial regression coefficients from
 #'   a set of models.
-#' @param inmat A matrix with dimesions \eqn{K \times p} specifying which
+#' @param inmat A matrix with dimensions \eqn{K \times p} specifying which
 #'   variables are included in each model.
 #' @param Xmat A matrix of the potential covariates to consider
 #'   (dimension \eqn{n \times p}).
 #' @param Yvec A vector of responses (dimension \eqn{n \times 1}).
-#' @param mod_names An optional vector specifying the names of the \eqn{K}
+#' @param mod_names An optional vector specifying the names of the \eqn{J}
 #'   models being considered.
 #' @param mod_prior A vector of prior probabilities for the set of models
 #'   for computing BIC model weights. If \code{NULL}, the prior defaults to
-#'   \eqn{\frac{1}{K}} for all \eqn{K} models.
+#'   \eqn{\frac{1}{J}} for all \eqn{J} models.
 #' @param family An input specifying the \eqn{glm} family to use in
-#'   estimation and computation of IC criteria.
-#' @param w_plus A logical statement to pick the version of the formula
-#'   to use. LIST FORMULAE here**... Default is \code{TRUE}, which does the
-#'   computation over the set of models for which the variable associated
-#'   with the coefficient is included.
+#'   estimation and computation of IC criterion.
+#' @param w_plus A logical statement defining which type of MA to use. 
+#'   Default is \code{FALSE}, which allows all models defined in \code{inmat} to 
+#'   be used in the averaging for each variable. If set to \code{TRUE}, MA
+#'   estimates will be made using only the models for which the coefficient
+#'   associated with each variable is not set to exactly zero. 
+#'   Weights are normalized conditional on the models meeting this criterion.
 #' @return A \code{data.frame} with information about the following variables
 #'   for all models in the model set and the model averaged result: Model,
-#'   approximate weights for AIC and BIC, AIC, BIC, and ML coefficinet estimates
-#'   and their associated standard errors. Pieces of this ouptut can be used with
+#'   approximate weights for AIC and BIC, AIC, BIC, and ML coefficient estimates
+#'   and their associated standard errors. Pieces of this output can be used with
 #'   the \code{MApp_IC} function.
 
 approx_pmp <- function(inmat, Xmat, Yvec, mod_names = NULL,
-                       mod_prior = NULL, family = "gaussian", w_plus = TRUE){
+                       mod_prior = NULL, family = "gaussian", w_plus = FALSE){
   #function to compute
   all_dat <- data.frame(Yvec,Xmat)
   num_x <- dim(Xmat)[2]

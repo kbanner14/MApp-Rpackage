@@ -16,13 +16,13 @@
 #' @param max_display An integer specifying the number of models to display in
 #'   the plotting window.
 #' @param mod_names A vector specifying the names of the models. If left blank,
-#'   models will be named \eqn{M_1, M_2,..., M_K}, where \eqn{M_1} will have the
-#'   largest posterior model probability and \eqn{M_K} has the smallest
+#'   models will be named \eqn{M_1, M_2,..., M_J}, where \eqn{M_1} will have the
+#'   largest posterior model probability and \eqn{M_J} has the smallest
 #'   posterior model probability.
 #' @param include_coef A vector specifying which partial regression coefficients
 #'   to display.
 #' @return The \code{MApp} plot and a table of posterior standard deviations for
-#'   the top \code{max.display} individual models specified, along with the
+#'   the top \code{max_display} individual models specified, along with the
 #'   posterior standard deviation of the model averaged parameter.
 #'
 MApp_MCMC <- function(mcmc_draws, plot_wind,

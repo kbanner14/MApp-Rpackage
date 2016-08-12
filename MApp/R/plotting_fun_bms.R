@@ -1,4 +1,4 @@
-#' @title Model Averaged Posteriors Plot
+#' @title Model Averaged Posteriors Plot (MAP plot)
 #' @description For \code{bma} objects obtained using the \code{bms} function in
 #'   the \code{BMS} package. Creates a graphical display showing all relevant
 #'   output from the model averaging procedure. Used to graphically compare
@@ -12,11 +12,11 @@
 #' @param plot_wind A vector of length 2 specifying the number of rows and
 #'   columns to partition the plotting window into.
 #' @param max_display An integer specifying the number of models to display in
-#'   the plotting window. Can also take on the argument "common3" to show the
-#'   top PMP model, the full model, and the model averaged distribuiton.
+#'   the plotting window. Can also take on the argument \code{"common3"} to show the
+#'   top PMP model, the full model, and the model averaged distribution.
 #' @param mod_names A vector specifying the names of the models. If left blank,
-#'   models will be named \eqn{M_1, M_2,..., M_K}, where \eqn{M_1} will have the
-#'   largest posterior model probability and \eqn{M_K} has the smallests
+#'   models will be named \eqn{M_1, M_2,..., M_J}, where \eqn{M_1} will have the
+#'   largest posterior model probability and \eqn{M_J} has the smallest
 #'   posterior model probability.
 #' @param include_coef A vector specifying which partial regression coefficients
 #'   to display.
@@ -28,7 +28,7 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
                         include_coef = NULL, ...) {
   # define pipe 
   `%>%` <- magrittr::`%>%`
-  
+
   # extract what we need from the bms object
   results <- data.frame(coef(x))
   PIP <- results[order(results$Idx), ][, 1]
@@ -279,7 +279,13 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
          cex = 1,
          pos = 2)
   }
-
-  readline("Table of posterior standard deviations: compare individual models to the continuous component of the MA posterior.\n\n (press enter to display table)\n")
+  
+  
+  # provide message to user before table is printed
+  readline("Table of posterior standard deviations: 
+           compare individual models to the continuous 
+           component of the MA posterior.\n\n 
+           (press enter to display table)\n")
+  # print table
   return(SD)
 }
