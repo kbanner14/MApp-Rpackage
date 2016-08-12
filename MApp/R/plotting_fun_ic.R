@@ -2,24 +2,22 @@
 #' @description Works with results from information theoretic approximations to
 #'   posterior model probabilities. Creates a graphical display showing all
 #'   relevant output from the model averaging procedure and facilitates comparisons
-#'   among individual models and their model averaged counterpart by displaying
-#'   confidence intervals for each model. The standard error of the continuous
-#'   component of the model averaged distribution can be compared to to corresponding
-#'   standard errors from the individual models.
-#' @param x_coef A matrix of coeffecient estimates for all variables from each
+#'   between individual models and their model averaged counterpart by displaying
+#'   confidence intervals from all models.
+#' @param x_coef A matrix of coefficient estimates for all variables from each
 #'   individual model considered.
 #' @param x_se A matrix of standard errors for all coefficients from each
 #'   individual model considered.
 #' @param pmp A vector of approximate posterior model weights for all models
 #'   considered
-#' @param inmat A matrix with dimesions \eqn{k \times p} specifying which
+#' @param inmat A matrix with dimensions \eqn{J \times p} specifying which
 #'   variables are included in each model. The order of models must correspond
 #'   to the order of \code{x_coef} a \code{x_se} (it is recommended, but not
 #'   required to sort these in decreasing posterior model probability).
-#' @param mod_names A vector of length \eqn{K} specifying the names of the models.
-#'   If left blank, models will be named \eqn{M_1, M_2,..., M_K}.
+#' @param mod_names A vector of length \eqn{J} specifying the names of the models.
+#'   If left blank, models will be named \eqn{M_1, M_2,..., M_J}.
 #' @param var_names A vector of length \eqn{p} specifying the names of the
-#'   varibles, if left blank the names will be dermined by the column names
+#'   varibles, if left blank the names will be determined by the column names
 #'   of \code{x_coef}.
 #' @param plot_wind A vector of length 2 specifying the number of rows and
 #'   columns for specifying the partition of the plotting window.
@@ -103,21 +101,22 @@ MApp_IC <- function(x_coef, x_se, pmp, inmat, var_names = NULL,
 #' @description Generates results from information theoretic approximations to
 #'   posterior model probabilities. Creates a graphical display showing all
 #'   relevant output from the model averaging procedure and facilitates comparisons
-#'   among individual models and their model averaged counterpart by displaying
-#'   confidence intervals for each model. The standard error of the continuous
-#'   component of the model averaged distribution can be compared to to corresponding
-#'   standard errors from the individual models.
+#'   between individual models and their model averaged counterpart by displaying
+#'   confidence intervals from all models.
 #' @param x A data frame with the response variable in the first column 
 #'   and x-variables in the remaining columns. 
-#' @param mod_names A vector of length \eqn{K} specifying the names of the models.
-#'   If left blank, models will be named \eqn{M_1, M_2,..., M_K}.
+#' @param mod_names A vector of length \eqn{J} specifying the names of the models.
+#'   If left blank, models will be named \eqn{M_1, M_2,..., M_J}.
 #' @param var_names A vector of length \eqn{p} specifying the names of the
-#'   varibles, if left blank the names will be dermined by the column names
+#'   varibles, if left blank the names will be determined by the column names
 #'   of \code{x}.
 #' @param plot_wind A vector of length 2 specifying the number of rows and
 #'   columns for specifying the partition of the plotting window.
-#' @param w_plus A logical statement determining which MA appproach to use. 
-#'   Default is \code{FALSE}
+#' @param w_plus A logical statement defining which type of MA to use. 
+#'   Default is \code{FALSE}, which allows all models defined in \code{inmat} to 
+#'   be used in the averaging for each variable. If set to \code{TRUE}, MA
+#'   estimates will be made using only the models for which the coefficient
+#'   associated with each variable is not set to exactly zero. 
 #' @param mod_prior A vector of length \eqn{K} specifying the prior model
 #' probabilities for each regression model in \eqn{\mathcal{M}}. Default is 
 #' uniform.
