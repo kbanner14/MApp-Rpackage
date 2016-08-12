@@ -8,7 +8,7 @@ MApp_IC(x_coef, x_se, pmp, inmat, var_names = NULL, mod_names = NULL,
   plot_wind = NULL)
 }
 \arguments{
-\item{x_coef}{A matrix of coeffecient estimates for all variables from each
+\item{x_coef}{A matrix of coefficient estimates for all variables from each
 individual model considered.}
 
 \item{x_se}{A matrix of standard errors for all coefficients from each
@@ -17,17 +17,17 @@ individual model considered.}
 \item{pmp}{A vector of approximate posterior model weights for all models
 considered}
 
-\item{inmat}{A matrix with dimesions \eqn{k \times p} specifying which
+\item{inmat}{A matrix with dimensions \eqn{J \times p} specifying which
 variables are included in each model. The order of models must correspond
 to the order of \code{x_coef} a \code{x_se} (it is recommended, but not
 required to sort these in decreasing posterior model probability).}
 
 \item{var_names}{A vector of length \eqn{p} specifying the names of the
-varibles, if left blank the names will be dermined by the column names
+varibles, if left blank the names will be determined by the column names
 of \code{x_coef}.}
 
-\item{mod_names}{A vector of length \eqn{K} specifying the names of the models.
-If left blank, models will be named \eqn{M_1, M_2,..., M_K}.}
+\item{mod_names}{A vector of length \eqn{J} specifying the names of the models.
+If left blank, models will be named \eqn{M_1, M_2,..., M_J}.}
 
 \item{plot_wind}{A vector of length 2 specifying the number of rows and
 columns for specifying the partition of the plotting window.}
@@ -39,9 +39,7 @@ The \code{MApp} plot.
 Works with results from information theoretic approximations to
   posterior model probabilities. Creates a graphical display showing all
   relevant output from the model averaging procedure and facilitates comparisons
-  among individual models and their model averaged counterpart by displaying
-  confidence intervals for each model. The standard error of the continuous
-  component of the model averaged distribution can be compared to to corresponding
-  standard errors from the individual models.
+  between individual models and their model averaged counterpart by displaying
+  confidence intervals from all models.
 }
 

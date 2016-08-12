@@ -12,17 +12,20 @@ MApp_AIC(x, var_names = NULL, mod_names = NULL, plot_wind = NULL,
 and x-variables in the remaining columns.}
 
 \item{var_names}{A vector of length \eqn{p} specifying the names of the
-varibles, if left blank the names will be dermined by the column names
+varibles, if left blank the names will be determined by the column names
 of \code{x}.}
 
-\item{mod_names}{A vector of length \eqn{K} specifying the names of the models.
-If left blank, models will be named \eqn{M_1, M_2,..., M_K}.}
+\item{mod_names}{A vector of length \eqn{J} specifying the names of the models.
+If left blank, models will be named \eqn{M_1, M_2,..., M_J}.}
 
 \item{plot_wind}{A vector of length 2 specifying the number of rows and
 columns for specifying the partition of the plotting window.}
 
-\item{w_plus}{A logical statement determining which MA appproach to use. 
-Default is \code{FALSE}}
+\item{w_plus}{A logical statement defining which type of MA to use. 
+Default is \code{FALSE}, which allows all models defined in \code{inmat} to 
+be used in the averaging for each variable. If set to \code{TRUE}, MA
+estimates will be made using only the models for which the coefficient
+associated with each variable is not set to exactly zero.}
 
 \item{family}{A character defining which link function to use in the 
 linear regression models. Default is \code{"gaussian"}.}
@@ -39,9 +42,7 @@ and BIC weights.
 Generates results from information theoretic approximations to
   posterior model probabilities. Creates a graphical display showing all
   relevant output from the model averaging procedure and facilitates comparisons
-  among individual models and their model averaged counterpart by displaying
-  confidence intervals for each model. The standard error of the continuous
-  component of the model averaged distribution can be compared to to corresponding
-  standard errors from the individual models.
+  between individual models and their model averaged counterpart by displaying
+  confidence intervals from all models.
 }
 

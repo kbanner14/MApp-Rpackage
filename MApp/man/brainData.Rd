@@ -22,7 +22,7 @@ brainData
 \description{
 A dataset containing the log brain weight log(g), log body weight log(kg),
 log gestation length log(days), and litter size (# offspring) for 96 species
-of mammals. These data were modified from \code{case0} in the R package 
+of mammals. These data were modified from \code{case0902} in the R package 
 \code{Sleuth2}.
 }
 \keyword{datasets}
