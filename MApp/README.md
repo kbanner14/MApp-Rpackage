@@ -15,8 +15,7 @@ The `{MAPP}` package provides plotting functions to help researchers digest resu
 1. Install the latest version of `{MAPP}` from GitHub. _[maybe I should have a version number 0.0.3?]_
 
 ```{r install, echo = T, message = FALSE}
-devtools::install_github("kbanner14/MApp-Rpackage", 
-                         subdir = "MApp")
+devtools::install_github("kbanner14/MApp-Rpackage", subdir = "MApp")
 library(MApp)
 ```
 
