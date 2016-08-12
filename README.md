@@ -3,8 +3,8 @@
 The `{MAPP}` package provides plotting functions to help researchers digest results from the model averaging procedure when applied to partial regression coefficients. There are four major plotting functions:  
 
 - `MApp_bms()` works with `bma` objects obtained from the `bms()` function @BMS (details about the `bms()` function can be found in `vignette("BMS")`.
-- `MApp_MCMC` works with default output from the implementation of model averaging using the `OpenBUGS` @BUGS or self programmed RJMCMC samplers. 
-- `MApp()` works with lists of posterior draws. 
+- `MApp_MCMC` works with default output from the implementation of model averaging using the `OpenBUGS` or self programmed RJMCMC samplers. 
+- `MApp_AIC()` works with a data frame, conducts AIC or AICc based model averaging for all-subsets regression. Returns the MAP plot and Model averaged results. 
 - `MApp_IC()` works with approximate posterior model probabilities estimated with AIC or BIC and estimates and standard errors of partial regression coefficients from all individual models. 
 
 # Load `{MAPP}` 
@@ -19,7 +19,7 @@ devtools::install_github("kbanner14/MApp-Rpackage", subdir = "MApp")
 library(MApp)
 ```
 
-2. Install package dependencies: `LearnBayes` @LearnBayes, `beanplot` @beanplot, `magritter`@magritter, `dplyr` @dplyr, and `BMS` @BMS. Use `install.packages("packagename")` to install these packages. _(not sure if I need this or if the github install automatically installs these? Look into this)_
+2. Install package dependencies: `LearnBayes`, `beanplot`, `magritter`, `dplyr`, and `BMS`. Use `install.packages("packagename")` to install these packages.
 
 ## `{MAPP}` Local Disk
 
