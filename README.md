@@ -2,7 +2,7 @@
 
 The `{MAPP}` package provides plotting functions to help researchers digest results from the model averaging procedure when applied to partial regression coefficients. There are four major plotting functions:  
 
-- `MApp_bms()` works with `bma` objects obtained from the `bms()` function @BMS (details about the `bms()` function can be found in `vignette("BMS")`.
+- `MApp_bms()` works with `bma` objects obtained from the `bms()` function in the `BMS` package (details about the `bms()` function can be found in the `BMS` tutorial [here: http://bms.zeugner.eu/tutorials/bms.pdf](http://bms.zeugner.eu/tutorials/bms.pdf)).
 - `MApp_MCMC` works with default output from the implementation of model averaging using the `OpenBUGS` or self programmed RJMCMC samplers. 
 - `MApp_AIC()` works with a data frame, conducts AIC or AICc based model averaging for all-subsets regression. Returns the MAP plot and Model averaged results. 
 - `MApp_IC()` works with approximate posterior model probabilities estimated with AIC or BIC and estimates and standard errors of partial regression coefficients from all individual models. 
