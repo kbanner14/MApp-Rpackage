@@ -5,8 +5,17 @@
 #'   averaging procedure and facilitates comparisons between individual models 
 #'   and their model averaged counterpart by displaying
 #'   confidence intervals from all models. Also displays the results in the form 
-#'   of a data frame. \emph{Works best with small model sets, for larger model 
-#'   sets use \code{MApp_IC_large()}.} 
+#'   of a data frame. \emph{This function works best with modest numbers of 
+#'   explanatory variables because it uses} \code{bms} \emph{to define an all-subsets
+#'   model set. 
+#'   By default,} \code{bms} \emph{will save results from 500 models. When 
+#'   there are 9 explanatory variables, there 512 models in the all-subsets model 
+#'   set. When there are 9 or more explanatory variables, it is 
+#'   important to check to make sure the sum of the PMPs for those 500 models 
+#'   is large enough for them to be a reasonable subset to condition IC 
+#'   approximate model averaging on. For more control with
+#'   larger model sets, and use with other packages IC-based results use} 
+#'   \code{MApp_IC_large()}.
 #' @param x A data frame with the response variable in the first column 
 #'   and x-variables in the remaining columns. 
 #' @param plot_wind A vector of length 2 specifying the number of rows and
