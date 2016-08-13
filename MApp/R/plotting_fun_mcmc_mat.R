@@ -5,7 +5,7 @@
 #'   compare posterior distributions of partial regression coefficients from
 #'   individual models in the model set to the posterior distributions resulting
 #'   from the model averaged partial regression coefficients. Also used to
-#'   compare posterior standard deviations of the continuous piece of the model
+#'   compare posterior standard deviations of the model
 #'   averaged distribution to corresponding standard deviations from individual
 #'   posterior distributions in tabular form.
 #' @param mcmc_draws A matrix of posterior samples of partial regression
@@ -42,9 +42,9 @@ MApp_MCMC <- function(mcmc_draws, plot_wind,
   inmat[is.na(inmat)] <-0
   weights <- table(mcmc_draws[,1])/sum(table(mcmc_draws[,1]))
   PIP <- t(inmat)%*%weights
-
+  
   mcmc_draws[mcmc_draws == 0] <- NA
-
+  
   coef_frames <- as.list(1:p)
   for(i in 1:p){
     coef_frames[[i]] <- mcmc_draws[,c(i+1,1)]
@@ -53,56 +53,56 @@ MApp_MCMC <- function(mcmc_draws, plot_wind,
     names(ma) <- names(coef_frames[[i]])
     coef_frames[[i]] <- rbind(ma, coef_frames[[i]])
   }
-
+  
   names(coef_frames) <- var_names
-
+  
   if (is.null(mod_names))
     mod_names <- paste("M", seq(1:K), sep = "")
-
-
+  
+  
   # index of three commonly chosen models
-     full <- which(apply(inmat, 1, sum) == p)
-     choiceIdx <- ifelse(full == 1 , 1, full)
-     choiceIdx <- unique(c(1,choiceIdx))
-
-
+  full <- which(apply(inmat, 1, sum) == p)
+  choiceIdx <- ifelse(full == 1 , 1, full)
+  choiceIdx <- unique(c(1,choiceIdx))
+  
+  
   if (is.null(max_display)) {
     for (i in 1:p) {
       coef_frames[[i]] <- coef_frames[[i]]
     }
     max_display <- K
-      } else {
-        if (max_display == "common3") {
-          for (i in 1:p) {
-            coef_frames[[i]]$mod <- as.numeric(coef_frames[[i]]$model)
-            coef_frames[[i]] <- subset(coef_frames[[i]], mod == 1 |
-                                         mod == choiceIdx[1]+1 |
-                                         mod == choiceIdx[2]+1)
-            coef_frames[[i]]$model <- factor(coef_frames[[i]]$model)
-            coef_frames[[i]] <- coef_frames[[i]][, 1:2]
-          }
-          max_display <- length(choiceIdx)
   } else {
-    for (i in 1:p) {
-      coef_frames[[i]]$mod <- as.numeric(coef_frames[[i]]$model)
-      coef_frames[[i]] <- subset(coef_frames[[i]], mod <= (max_display + 1))
-      coef_frames[[i]]$model <- factor(coef_frames[[i]]$model)
-      coef_frames[[i]] <- coef_frames[[i]][, 1:2]
-    }
-
-  }}
-
+    if (max_display == "common3") {
+      for (i in 1:p) {
+        coef_frames[[i]]$mod <- as.numeric(coef_frames[[i]]$model)
+        coef_frames[[i]] <- subset(coef_frames[[i]], mod == 1 |
+                                     mod == choiceIdx[1]+1 |
+                                     mod == choiceIdx[2]+1)
+        coef_frames[[i]]$model <- factor(coef_frames[[i]]$model)
+        coef_frames[[i]] <- coef_frames[[i]][, 1:2]
+      }
+      max_display <- length(choiceIdx)
+    } else {
+      for (i in 1:p) {
+        coef_frames[[i]]$mod <- as.numeric(coef_frames[[i]]$model)
+        coef_frames[[i]] <- subset(coef_frames[[i]], mod <= (max_display + 1))
+        coef_frames[[i]]$model <- factor(coef_frames[[i]]$model)
+        coef_frames[[i]] <- coef_frames[[i]][, 1:2]
+      }
+      
+    }}
+  
   # Find MaxMin of each beanplot
-
+  
   MaxMin <- matrix(NA, nrow = p, ncol = 2)
-
+  
   for (i in 1:p) {
     MaxMin[i, 1] <- min(coef_frames[[i]][, 1], na.rm = T)
     MaxMin[i, 2] <- max(coef_frames[[i]][, 1], na.rm = T)
   }
-
+  
   # Only make plots for coefficients that appeared
-
+  
   include_beans <- c(1:p)
   num_null <- sum((MaxMin[, 1] & MaxMin[, 2] == 0))
   if (num_null == 0) {
@@ -110,42 +110,55 @@ MApp_MCMC <- function(mcmc_draws, plot_wind,
   } else {
     include_beans <- include_beans[-which((MaxMin[, 1] & MaxMin[, 2] == 0))]
   }
-
+  
   # only display included coefficients in SD table
   if (is.null(include_coef)) {
     include_coef <- include_beans
   }
-  # find cts piece of MA posterior SD for each coefficient and compare to individual models
-  SD <- matrix(NA, nrow = p, ncol = (max_display + 1))
-
+  # find MA posterior SD: both components for each coefficient and 
+  # compare to individual models' posterior SDs
+  
+  SD <- matrix(NA, nrow = p, ncol = (max_display + 2))
+  
   if (length(include_coef) == p) {
     for (i in include_coef){
       sds <- coef_frames[[i]] %>% dplyr::group_by(model) %>%
         dplyr::summarise(SD = round(sd(post_vec, na.rm = T), 4))
-      SD[i, ] <- t(sds[,"SD"])
+      coef_full <- coef_frames[[i]]
+      coef_full[is.na(coef_full[,1]), 1] <- 0
+      sd_full <- coef_full %>% dplyr::group_by(model)%>% 
+        dplyr::summarise(SD_full = round(sd(post_vec), 4))
+      sds <- unlist(c(sd_full[1,2], sds[,2]))
+      SD[i, ] <- sds
     }
-
+    
   } else {
     for (i in include_coef) {
       sds <- coef_frames[[i]] %>% dplyr::group_by(model) %>%
         dplyr::summarise(SD = round(sd(post_vec, na.rm = T), 4))
-      SD[i, ] <- t(sds[,"SD"])
+      coef_full <- coef_frames[[i]]
+      coef_full[is.na(coef_full[,1]), 1] <- 0
+      sd_full <- coef_full %>% dplyr::group_by(model)%>% 
+        dplyr::summarise(SD_full = round(sd(post_vec), 4))
+      sds <- unlist(c(sd_full[1,2], sds[,2]))
+      SD[i, ] <- sds
     }
     test.in <- apply(SD, 1, sum, na.rm = T)
     SD <- SD[-which(test.in ==0),]
   }
-
+  
   SD[which(is.na(SD))] <- "---"
   SD <- as.table(SD)
-  dimnames(SD)[[1]] <- var_names[include_coef]
-  dimnames(SD)[[2]] <- levels(coef_frames[[i]]$model)
-
-
+  
+  SD <- rbind(SD,c("---","---",round(weights[1:max_display],4)))
+  dimnames(SD)[[2]] <- c("MA", "MA_cts", levels(coef_frames[[i]]$model)[-1])
+  
+  dimnames(SD)[[1]] <- c(var_names[include_coef], "PMP")
   # make the beanplot
-
+  
   par(mfrow = c(plot_wind), las = 1)
   for (i in include_coef) {
-
+    
     # Initilize plot
     allplot <- beanplot::beanplot(post_vec ~ model,
                                   names = levels(coef_frames[[i]]$model),
@@ -156,7 +169,7 @@ MApp_MCMC <- function(mcmc_draws, plot_wind,
                                                var_names[i],
                                                sep = ""),
                                   horizontal = T, bw = "nrd0")
-
+    
     # Add top model beans
     beanplot::beanplot(post_vec ~ model, side = "second",
                        show.names = F,
@@ -168,11 +181,13 @@ MApp_MCMC <- function(mcmc_draws, plot_wind,
                        ll = 0.12,
                        horizontal = T,
                        col = c("lightgray"), bw = "nrd0")
-
+    
     # Add MA posterior mean line
-    MA.mean <- mean(subset(coef_frames[[i]], model == "MA")$post_vec, na.rm = T)
+    ma.mean <- subset(coef_frames[[i]], model =="MA")$post_vec
+    ma.mean[is.na(ma.mean)] <- 0
+    MA.mean <- mean(ma.mean)
     segments(MA.mean, 1, MA.mean, (max_display + 1.35), col = "black", lty = 4)
-
+    
     # Add MA bean
     beanplot::beanplot(post_vec ~ model, side = "second",
                        show.names = F,
@@ -184,15 +199,15 @@ MApp_MCMC <- function(mcmc_draws, plot_wind,
                        ll = 0.12,
                        horizontal = T,
                        col = c("black", "gray", "red", "darkgrey"), bw = "nrd0")
-
+    
     # Add horizontal lines
     modLines <- seq(1:(max_display + 1))
     abline(h = c(1, modLines), lty = 2, col = "gray")
-
+    
     # Add model weights. display 0.000 for ~0's to convey rounding
     disp.weights <- round(weights[1:max_display], 3)
     disp.weights <- ifelse(disp.weights == 0, "< 0.000", as.character(disp.weights))
-
+    
     # Add text to the plot
     text(rep(MaxMin[i, 1], max_display + 1),
          c(1:(max_display + 1) + 0.25),
@@ -200,7 +215,7 @@ MApp_MCMC <- function(mcmc_draws, plot_wind,
          col = "red",
          cex = 1,
          pos = 1)
-
+    
     # Add and make sure PIP's are not rounded to exactly 0.
     disp.PEP <- round(1 - PIP, 3)
     disp.PEP <- ifelse(disp.PEP == 0, "<0.000", as.character(disp.PEP))
@@ -224,8 +239,9 @@ MApp_MCMC <- function(mcmc_draws, plot_wind,
          cex = 1,
          pos = 2)
   }
-
-  readline("Table of posterior standard deviations: compare individual models to the continuous component of the MA posterior.\n\n (press enter to display table)\n")
+  
+  readline("Table of posterior standard deviations: 
+           compare individual models to MA posterior.\n\n 
+           (press enter to display table)\n")
   return(SD)
 }
-

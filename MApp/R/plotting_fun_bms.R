@@ -160,34 +160,45 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
   if (is.null(include_coef)) {
     include_coef <- include_beans
   }
-  # find cts piece of MA posterior SD for each coefficient and compare to individual models
-  SD <- matrix(NA, nrow = length(include_coef), ncol = (max_display + 1))
-
+  # find cts piece of MA posterior SD for each coefficient and compare 
+  # to individual models. Also find MA post from draws - to compare to 
+  # other SDs and also analytical result from BMS. 
+  SD <- matrix(NA, nrow = length(include_coef), ncol = (max_display + 2))
+  
   if (length(include_coef) == p) {
     for (i in include_coef){
       sds <- coef_frames[[i]] %>% dplyr::group_by(Model) %>%
         dplyr::summarise(SD = round(sd(Post.Vec, na.rm = T), 4))
-      SD[i, ] <- t(sds[,"SD"])
-
+      coef_full <- coef_frames[[i]]
+      coef_full[is.na(coef_full[,1]), 1] <- 0
+      sd_full <- coef_full %>% dplyr::group_by(Model)%>% 
+        dplyr::summarise(SD_full = round(sd(Post.Vec), 4))
+      sds <- unlist(c(sd_full[1,2], sds[,2]))
+      SD[i, ] <- sds
+      
     }
   } else {
     j = 1
     for (i in include_coef) {
       sds <- coef_frames[[i]] %>% dplyr::group_by(Model) %>%
         dplyr::summarise(SD = round(sd(Post.Vec, na.rm = T), 4))
-      SD[j, ] <- t(sds[,"SD"])
+      coef_full <- coef_frames[[i]]
+      coef_full[is.na(coef_full[,1]), 1] <- 0
+      sd_full <- coef_full %>% dplyr::group_by(Model)%>% 
+        dplyr::summarise(SD_full = round(sd(Post.Vec), 4))
+      sds <- unlist(c(sd_full[1,2], sds[,2]))
+      SD[j, ] <- sds
       j = j+1
     }
   }
-
+  
   SD[which(is.na(SD))] <- "---"
   SD <- as.table(SD)
-
-  SD <- rbind(SD,c("---",round(weights_raw[1:max_display],4)))
-  dimnames(SD)[[2]] <- levels(coef_frames[[i]]$Model)
-
+  
+  SD <- rbind(SD,c("---","---",round(weights_raw[1:max_display],4)))
+  dimnames(SD)[[2]] <- c("MA", "MA_cts", levels(coef_frames[[i]]$Model)[-1])
+  
   dimnames(SD)[[1]] <- c(var_names[include_coef], "PMP")
-
   # Add and make sure PIP's are not rounded to exactly 0.
   disp.PEP <- round(1 - PIP, 3)
   disp.PEP <- ifelse(disp.PEP == 0, "<0.000", as.character(disp.PEP))
@@ -283,8 +294,7 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
   
   # provide message to user before table is printed
   readline("Table of posterior standard deviations: 
-           compare individual models to the continuous 
-           component of the MA posterior.\n\n 
+           compare individual models to the MA posterior.\n\n 
            (press enter to display table)\n")
   # print table
   return(SD)
