@@ -228,6 +228,13 @@ approx_pmp <- function(inmat, Xmat, Yvec, mod_names = NULL,
   coef_mat <- rbind(ma_estsAIC, ma_estsBIC, coef_mat)
   se_mat <- rbind(as.vector(ma_seAIC), as.vector(ma_seBIC), se_mat)
   
+  # tell the user what type of MA they used
+  disp_type <- ifelse(aic_c == TRUE & type == "AIC", "AICc", 
+                      ifelse(type == "BIC", "BIC", "AIC"))
+  disp_wplus <- ifelse(w_plus == TRUE, "Models where coefficient is not set to 0", 
+                       "All models in the model set")
+  message(paste("Type of information criteria used in MAP plot:", disp_type))
+  message(paste("Subset of models used in MA:", disp_wplus))
   if(aic_c == TRUE){
     return(
       data.frame(Model = mod_names, AICc_pmp = pmpA,

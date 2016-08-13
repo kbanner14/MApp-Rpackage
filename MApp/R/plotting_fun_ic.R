@@ -13,7 +13,7 @@
 #'   columns for specifying the partition of the plotting window.
 #' @param type An argument allowing the user to specify the type of information
 #'   criterion to use in approximating the PMPs. Default is \code{BIC}. Will 
-#'   also accomodate AIC weights if the user specifies \code{type = "AIC"}. 
+#'   also accommodate AIC weights if the user specifies \code{type = "AIC"}. 
 #' @param aic_c A logical statement that goes with \code{type = "AIC"} to specify
 #'   whether or not to use adjusted AIC (AICc) weights or raw AIC weights. The 
 #'   default is \code{aic_c = TRUE}.
@@ -144,15 +144,7 @@ MApp_IC <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
     segments(L95, 1:(k+1), U95, 1:(k+1), col = col95, lty = 1, lwd = 6)
     segments(L68, 1:(k+1), U68, 1:(k+1), col = col68, lty = 1, lwd = 8)
     points(est, 1:(k+1), col = colest, pch = "|", cex = 1.5)
-    
-    
   }
-  disp_type <- ifelse(aic_c == TRUE & type == "AIC", "AICc", 
-                      ifelse(type == "BIC", "BIC", "AIC"))
-  disp_wplus <- ifelse(w_plus == TRUE, "Models where coefficient is not set to 0", 
-                       "All models in the model set")
-  message(paste("Type of information criteria used in MAP plot:", disp_type))
-  message(paste("Subset of models used in MA:", disp_wplus))
   return(temp)
 }
 
