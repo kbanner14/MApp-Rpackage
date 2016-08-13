@@ -2,44 +2,59 @@
 % Please edit documentation in R/plotting_fun_ic.R
 \name{MApp_IC}
 \alias{MApp_IC}
-\title{Model Averaged Posteriors Plot}
+\title{Model Averaged Posteriors Plot for MA Using Information Criteria}
 \usage{
-MApp_IC(x_coef, x_se, pmp, inmat, var_names = NULL, mod_names = NULL,
-  plot_wind = NULL)
+MApp_IC(x, plot_wind, type = "BIC", aic_c = TRUE, w_plus = FALSE,
+  var_names = NULL, mod_names = NULL, family = "gaussian",
+  mod_prior = NULL)
 }
 \arguments{
-\item{x_coef}{A matrix of coefficient estimates for all variables from each
-individual model considered.}
+\item{x}{A data frame with the response variable in the first column 
+and x-variables in the remaining columns.}
 
-\item{x_se}{A matrix of standard errors for all coefficients from each
-individual model considered.}
+\item{plot_wind}{A vector of length 2 specifying the number of rows and
+columns for specifying the partition of the plotting window.}
 
-\item{pmp}{A vector of approximate posterior model weights for all models
-considered}
+\item{type}{An argument allowing the user to specify the type of information
+criterion to use in approximating the PMPs. Default is \code{BIC}. Will 
+also accommodate AIC weights if the user specifies \code{type = "AIC"}.}
 
-\item{inmat}{A matrix with dimensions \eqn{J \times p} specifying which
-variables are included in each model. The order of models must correspond
-to the order of \code{x_coef} a \code{x_se} (it is recommended, but not
-required to sort these in decreasing posterior model probability).}
+\item{aic_c}{A logical statement that goes with \code{type = "AIC"} to specify
+whether or not to use adjusted AIC (AICc) weights or raw AIC weights. The 
+default is \code{aic_c = TRUE}.}
+
+\item{w_plus}{A logical statement defining which type of MA to use. 
+Default is \code{FALSE}, which allows all models defined in \code{inmat} to 
+be used in the averaging for each variable. If set to \code{TRUE}, MA
+estimates will be made using only the models for which the coefficient
+associated with each variable is not set to exactly zero.}
 
 \item{var_names}{A vector of length \eqn{p} specifying the names of the
-varibles, if left blank the names will be determined by the column names
-of \code{x_coef}.}
+variables, if left blank the names will be determined by the column names
+of \code{x}.}
 
 \item{mod_names}{A vector of length \eqn{J} specifying the names of the models.
 If left blank, models will be named \eqn{M_1, M_2,..., M_J}.}
 
-\item{plot_wind}{A vector of length 2 specifying the number of rows and
-columns for specifying the partition of the plotting window.}
+\item{family}{A character defining which link function to use in the 
+linear regression models. Default is \code{"gaussian"}.}
+
+\item{mod_prior}{A vector of length \eqn{J} specifying the prior model
+probabilities for each regression model in \eqn{\mathcal{M}}. Default is 
+discrete uniform.}
 }
 \value{
-The \code{MApp} plot.
+The \code{MApp} plot and a summary of the MA results for both types of 
+ weights: AIC or AICc, and BIC.
 }
 \description{
-Works with results from information theoretic approximations to
-  posterior model probabilities. Creates a graphical display showing all
-  relevant output from the model averaging procedure and facilitates comparisons
-  between individual models and their model averaged counterpart by displaying
-  confidence intervals from all models.
+Generates results from approximations to
+  posterior model probabilities (PMPs) based on information criteria. 
+  Creates a graphical display showing all relevant output from the model 
+  averaging procedure and facilitates comparisons between individual models 
+  and their model averaged counterpart by displaying
+  confidence intervals from all models. Also displays the results in the form 
+  of a data frame. \emph{Works best with small model sets, for larger model 
+  sets use \code{MApp_IC_large()}.}
 }
 

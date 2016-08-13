@@ -38,7 +38,7 @@ Works with posterior draws of partial regression
   compare posterior distributions of partial regression coefficients from
   individual models in the model set to the posterior distributions resulting
   from the model averaged partial regression coefficients. Also used to
-  compare posterior standard deviations of the continuous piece of the model
+  compare posterior standard deviations of the model
   averaged distribution to corresponding standard deviations from individual
   posterior distributions in tabular form.
 }
