@@ -1,3 +1,14 @@
+#' @title Compute AICc for a model
+#' @param x an object of the class \code{lm} or \code{glm}. 
+#' @return AICc for the model fit. 
+
+aicc <- function(x){
+  n <- length(x$fitted) 
+  k <- length(coef(x)) + 1
+  out <- AIC(x) + (2*k*(k+1))/(n-k-1)
+  return(out)
+}
+
 #' @title Compute approximate posterior model probabilities using the AIC
 #'   approximation for a set of models.
 #' @param AIC_vec A vector of AIC values for a set of models.
@@ -141,7 +152,8 @@ se_MA <- function(weights, coef_mat, se_mat, inmat, w_plus = FALSE){
 #'   the \code{MApp_IC} function.
 
 approx_pmp <- function(inmat, Xmat, Yvec, mod_names = NULL,
-                       mod_prior = NULL, family = "gaussian", w_plus = FALSE){
+                       mod_prior = NULL, family = "gaussian", 
+                       w_plus = FALSE, aic_c = TRUE){
   #function to compute
   all_dat <- data.frame(Yvec,Xmat)
   num_x <- dim(Xmat)[2]
@@ -168,7 +180,11 @@ approx_pmp <- function(inmat, Xmat, Yvec, mod_names = NULL,
     ests <- summary(fit)$coefficients[,1]
     ses <- summary(fit)$coefficients[,2]
     allModels[[i]] <- data.frame(ests, ses)
-    aic[i] <- AIC(fit)
+    if(aic_c == TRUE){
+      aic[i] <- aicc(fit)
+    } else {
+      aic[i] <- AIC(fit)
+    }
     bic[i] <- BIC(fit)
   }
 
@@ -195,8 +211,13 @@ approx_pmp <- function(inmat, Xmat, Yvec, mod_names = NULL,
 
   ma_seAIC <- se_MA(pmpA, coef_mat, se_mat, inmat, w_plus)
   ma_seBIC <- se_MA(pmpB, coef_mat, se_mat, inmat, w_plus)
+  
+  if(aic_c == TRUE){
+    mod_names <- c("MA_AICc", "MA_BIC", mod_names)
+  } else{
+    mod_names <- c("MA_AIC", "MA_BIC", mod_names)
+  }
 
-  mod_names <- c("MA_AIC", "MA_BIC", mod_names)
   pmpA <- c("MA", "MA", round(pmpA, digits = 4))
   pmpB <- c( "MA", "MA", round(pmpB, digits = 4))
   aic <- c("--", "--", round(aic, digits = 4))
@@ -204,13 +225,26 @@ approx_pmp <- function(inmat, Xmat, Yvec, mod_names = NULL,
 
   coef_mat <- rbind(ma_estsAIC, ma_estsBIC, coef_mat)
   se_mat <- rbind(ma_seAIC, ma_seBIC, se_mat)
-
-  return(
-    data.frame(Model = mod_names, AIC_pmp = pmpA,
-               BIC_pmp = pmpB,
-               AIC = aic,
-               BIC = bic,
-               coef_mat,
-               se_mat)
-  )
+  
+  if(aic_c == TRUE){
+    return(
+      data.frame(Model = mod_names, AICc_pmp = pmpA,
+                 BIC_pmp = pmpB,
+                 AICc = aic,
+                 BIC = bic,
+                 coef_mat,
+                 se_mat)
+    )
+    
+  } else {
+    return(
+      data.frame(Model = mod_names, AIC_pmp = pmpA,
+                 BIC_pmp = pmpB,
+                 AIC = aic,
+                 BIC = bic,
+                 coef_mat,
+                 se_mat)
+    )
+  }
+  
 }
