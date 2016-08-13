@@ -6,7 +6,7 @@
   and BIC approximations.}
 \usage{
 approx_pmp(inmat, Xmat, Yvec, mod_names = NULL, mod_prior = NULL,
-  family = "gaussian", w_plus = FALSE)
+  family = "gaussian", w_plus = FALSE, aic_c = TRUE)
 }
 \arguments{
 \item{inmat}{A matrix with dimensions \eqn{K \times p} specifying which
