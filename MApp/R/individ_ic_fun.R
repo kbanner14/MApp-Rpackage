@@ -110,9 +110,8 @@ se_MA <- function(weights, coef_mat, se_mat, inmat, w_plus = FALSE){
     for(i in 1:dim(coef_mat)[2]){
       mods <- which(inmat[,i] == 1)
       w_norm <- weights[mods]/(sum(weights[mods]))
-      ests_mat[mods, i] <- 0
-      dev_mat[,i] <- (coef_mat[,i] - ests_mat[,i])^2
-      out[i] <- w_norm%*%sqrt(var_mat[mods,i] + dev_mat[mods,i])
+      devs <- (coef_mat[mods,i] - ests_ma[i])^2
+      out[i] <- w_norm%*%sqrt(var_mat[mods,i] + devs)
     }
   } else {
     dev_mat <- (coef_mat - ests_mat)^2
@@ -193,10 +192,19 @@ approx_pmp <- function(inmat, Xmat, Yvec, mod_names = NULL,
 
   coef_mat <- matrix(0, nrow = num_mod, ncol = num_x + 1)
   se_mat<- matrix(0, nrow = num_mod, ncol = num_x + 1)
+  
   for(ndx in 1:num_mod){
     coef_mat[ndx, c(1, which(inmat[ndx, ] == 1)+1)] <- allModels[[ndx]][,1]
     se_mat[ndx, c(1, which(inmat[ndx, ] == 1)+1)] <- allModels[[ndx]][,2]
   }
+  
+  ma_estsAIC <- est_MA(pmpA, coef_mat, inmat = inmat, w_plus = w_plus)
+  ma_estsBIC <- est_MA(pmpB, coef_mat, inmat = inmat, w_plus = w_plus)
+  
+  ma_seAIC <- se_MA(pmpA, coef_mat, se_mat, inmat, w_plus)
+  ma_seBIC <- se_MA(pmpB, coef_mat, se_mat, inmat, w_plus)
+  
+  
   coef_mat <- data.frame(round(coef_mat, digits = 4))
   idx_full <- which(apply(inmat, 1, sum) == num_x)
   names(coef_mat) <- paste("Est", c("Int",names(Xmat[which(inmat[idx_full,]==1)])),
@@ -205,12 +213,6 @@ approx_pmp <- function(inmat, Xmat, Yvec, mod_names = NULL,
   se_mat <- data.frame(round(se_mat, digits = 4))
   names(se_mat) <- paste("SE", c("Int",names(Xmat[which(inmat[idx_full,]==1)])),
                          sep = "_")
-
-  ma_estsAIC <- est_MA(pmpA, coef_mat, inmat = inmat, w_plus = w_plus)
-  ma_estsBIC <- est_MA(pmpB, coef_mat, inmat = inmat, w_plus = w_plus)
-
-  ma_seAIC <- se_MA(pmpA, coef_mat, se_mat, inmat, w_plus)
-  ma_seBIC <- se_MA(pmpB, coef_mat, se_mat, inmat, w_plus)
   
   if(aic_c == TRUE){
     mod_names <- c("MA_AICc", "MA_BIC", mod_names)
@@ -224,7 +226,7 @@ approx_pmp <- function(inmat, Xmat, Yvec, mod_names = NULL,
   bic <- c("--", "--", round(bic, digits = 4))
 
   coef_mat <- rbind(ma_estsAIC, ma_estsBIC, coef_mat)
-  se_mat <- rbind(ma_seAIC, ma_seBIC, se_mat)
+  se_mat <- rbind(as.vector(ma_seAIC), as.vector(ma_seBIC), se_mat)
   
   if(aic_c == TRUE){
     return(
