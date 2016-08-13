@@ -154,6 +154,9 @@ MApp_IC <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
     segments(L68, 1:(k+1), U68, 1:(k+1), col = col68, lty = 1, lwd = 8)
     points(est, 1:(k+1), col = colest, pch = "|", cex = 1.5)
   }
+  disp_type <- ifelse(aic_c == TRUE & type == "AIC", "AICc", 
+                      ifelse(type == "BIC", "BIC", "AIC"))
+  message(paste("Type of information criteria used in MAP plot:", disp_type))
   return(temp)
 }
 
