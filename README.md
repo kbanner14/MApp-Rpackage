@@ -25,7 +25,7 @@ library(MApp)
 ## Load `{MAPP}` From Local Disk
 
 1. Install package dependencies: `LearnBayes`, `beanplot`, `dplyr`, and `BMS`. Use `install.packages("packagename")` to install these packages.
-2. Download all files in the `MApp-Rpackage/` repository from the _Download Zip_ button <img src="download.png" width="225" height="200" /> on the right hand side of the screen  [here](https://github.com/kbanner14/MApp-Rpackage). 
+2. Download all files in the `MApp-Rpackage/` repository from the _Download Zip_ button <img src="download.png" width="200" height="150" /> on the right hand side of the screen  [here](https://github.com/kbanner14/MApp-Rpackage). 
 Git users may also clone the repository. 
 
 3. Set your working directory to the location of the `MApp-Rpackage` repository on your computer. 
