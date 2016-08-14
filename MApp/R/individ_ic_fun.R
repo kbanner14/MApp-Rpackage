@@ -149,7 +149,6 @@ se_MA <- function(weights, coef_mat, se_mat, inmat, w_plus = FALSE){
 #'   approximate weights for AIC and BIC, AIC, BIC, and ML coefficient estimates
 #'   and their associated standard errors. Pieces of this output can be used with
 #'   the \code{MApp_IC} function.
-
 approx_pmp <- function(inmat, Xmat, Yvec, mod_names = NULL,
                        mod_prior = NULL, family = "gaussian", 
                        w_plus = FALSE, aic_c = TRUE){
@@ -198,21 +197,18 @@ approx_pmp <- function(inmat, Xmat, Yvec, mod_names = NULL,
     se_mat[ndx, c(1, which(inmat[ndx, ] == 1)+1)] <- allModels[[ndx]][,2]
   }
   
+  coef_mat <- data.frame(coef_mat)
+  names(coef_mat)<- paste("Est", c("Int", names(Xmat)),
+                                   sep = "_")
+  se_mat <- data.frame(se_mat)
+  names(se_mat) <- paste("SE", c("Int", names(Xmat)),
+                                 sep = "_")
+  
   ma_estsAIC <- est_MA(pmpA, coef_mat, inmat = inmat, w_plus = w_plus)
   ma_estsBIC <- est_MA(pmpB, coef_mat, inmat = inmat, w_plus = w_plus)
   
   ma_seAIC <- se_MA(pmpA, coef_mat, se_mat, inmat, w_plus)
   ma_seBIC <- se_MA(pmpB, coef_mat, se_mat, inmat, w_plus)
-  
-  
-  coef_mat <- data.frame(round(coef_mat, digits = 4))
-  idx_full <- which(apply(inmat, 1, sum) == num_x)
-  names(coef_mat) <- paste("Est", c("Int",names(Xmat[which(inmat[idx_full,]==1)])),
-                           sep = "_")
-
-  se_mat <- data.frame(round(se_mat, digits = 4))
-  names(se_mat) <- paste("SE", c("Int",names(Xmat[which(inmat[idx_full,]==1)])),
-                         sep = "_")
   
   if(aic_c == TRUE){
     mod_names <- c("MA_AICc", "MA_BIC", mod_names)
@@ -220,13 +216,14 @@ approx_pmp <- function(inmat, Xmat, Yvec, mod_names = NULL,
     mod_names <- c("MA_AIC", "MA_BIC", mod_names)
   }
 
-  pmpA <- c("MA", "MA", round(pmpA, digits = 4))
-  pmpB <- c( "MA", "MA", round(pmpB, digits = 4))
-  aic <- c("--", "--", round(aic, digits = 4))
-  bic <- c("--", "--", round(bic, digits = 4))
+  pmpA <- c(rep(NA,2), pmpA)
+  pmpB <- c(rep(NA,2), pmpB)
+  aic <- c(rep(NA,2), aic)
+  bic <- c(rep(NA,2), bic)
 
   coef_mat <- rbind(ma_estsAIC, ma_estsBIC, coef_mat)
   se_mat <- rbind(as.vector(ma_seAIC), as.vector(ma_seBIC), se_mat)
+  
   
   # tell the user what type of MA they used
   disp_wplus <- ifelse(w_plus == TRUE, "Models where coefficient is not set to 0", 

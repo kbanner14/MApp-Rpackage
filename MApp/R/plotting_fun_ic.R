@@ -47,7 +47,7 @@
 MApp_IC <- function(x, plot_wind, type = "BIC", aic_c = TRUE, 
                     w_plus = FALSE, var_names = NULL, 
                     mod_names = NULL, family= "gaussian", 
-                    mod_prior = NULL){
+                    mod_prior = NULL, max_display = NULL){
   # assuming x is a matrix of estimates and standard errors
   # from each individual model (row) and the model averaged
   # result.
@@ -78,6 +78,19 @@ MApp_IC <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
     x_mse <- cbind(pmp, x_se[2:nrow(x_se),])
     x_mse <- x_mse[,2:ncol(x_mse)]
     x_se[2:nrow(x_se),] <- x_mse
+    if(is.null(max_display) & nrow(x_coef) > 20){
+      x_coef <- x_coef[1:21, ]
+      x_se <- x_se[1:21, ]
+      max_display <- 20
+    } else {
+      if(is.null(max_display)){
+        max_display <- k
+      } else {
+        max_display <- max_display
+        x_coef <- x_coef[1:(max_display+1), ]
+        x_se <- x_se[1:(max_display+1), ]
+      }
+    }
   } else {
     pmp <- as.numeric(as.character(temp[-c(1,2),3]))
     pip <- t(inmat)%*%pmp
@@ -94,6 +107,19 @@ MApp_IC <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
     x_mse <- cbind(pmp, x_se[2:nrow(x_se),])
     x_mse <- x_mse[,2:ncol(x_mse)]
     x_se[2:nrow(x_se),] <- x_mse
+    if(is.null(max_display) & nrow(x_coef) > 20){
+      x_coef <- x_coef[1:21, ]
+      x_se <- x_se[1:21, ]
+      max_display <- 20
+    } else {
+      if(is.null(max_display)){
+        max_display <- k
+      } else {
+        max_display <- max_display
+        x_coef <- x_coef[1:(max_display+1), ]
+        x_se <- x_se[1:(max_display+1), ]
+      }
+    }
   }
   
   if ( is.null(mod_names) ) {
@@ -118,22 +144,23 @@ MApp_IC <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
     U99 <- x_coef[,i] + 3*x_se[,i]
     est <- x_coef[,i]
     
-    col99 <- c("#e31a1c", rep("black", k))
-    col95 <- c("#1f78b4", rep("#66c2a5", k))
-    col68 <- c("#b2df8a", rep("#fc8d62", k))
-    colest <- c("#e31a1c", rep("black", k))
+    col99 <- c("#e31a1c", rep("black", max_display))
+    col95 <- c("#1f78b4", rep("#66c2a5", max_display))
+    col68 <- c("#b2df8a", rep("#fc8d62", max_display))
+    colest <- c("#e31a1c", rep("black", max_display))
     
     
-    plot(c(1,1), xlim = c(min(L99), max(U99)), ylim = c(1, (k+1)),
+    plot(c(1,1), xlim = c(min(L99), max(U99)), ylim = c(1, (max_display+1)),
          type = "n", xlab = "", yaxt = "n", ylab = "",
          main = var_names[i])
     
     axis(2, at = 1, labels = mod_names[1], tick = T, col.axis = col99[1])
-    axis(2, at = 2:(k+1), labels = mod_names[2:(k+1)], tick = T,
+    axis(2, at = 2:(max_display+1), labels = mod_names[2:(max_display+1)], tick = T,
          col.axis = col99[2])
     
-    pmp_disp <- ifelse(pmp == 0, "<0.0000", as.character(pmp))
-    text(min(L99)+ sd(L99)/5, 2:(k+1), pmp_disp, pos = 3)
+    pmp_disp <- round(pmp[order(pmp, decreasing = T)], 4)
+    pmp_disp <- ifelse(pmp_disp == 0, "<0.0000", as.character(pmp_disp))
+    text(min(L99)+ sd(L99)/5, 2:(max_display+1), pmp_disp[1:max_display], pos = 3)
     middle <- median(c(min(L99), max(U99)))
     text(middle, 1.1, bquote("Pr("~beta[.(i)~", MA"]~"= 0 | y ) ="~.(pep_text[i])),
          col = "#e31a1c", pos = 3)
@@ -145,21 +172,32 @@ MApp_IC <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
     L99[L99 == 0] <- NA
     U99[U99 == 0] <- NA
     est[est == 0] <- NA
-    segments(c(est[1], 0), c(1.5,0), c(est[1], 0), c(k+1.5, k+1.5),lty = c(4,4),
+    segments(c(est[1], 0), c(1.5,0), c(est[1], 0), c(max_display+1.5, max_display+1.5),lty = c(4,4),
              col = c("#e31a1c", "gray"))
     abline(h = 1.5, col = "#e31a1c", lty = 2)
-    abline(h = 2.5:(k+.5), col = "lightgray", lty = 2)
-    segments(L99, 1:(k+1), U99, 1:(k+1), col = col99, lty = 1, lwd = 4)
-    segments(L95, 1:(k+1), U95, 1:(k+1), col = col95, lty = 1, lwd = 6)
-    segments(L68, 1:(k+1), U68, 1:(k+1), col = col68, lty = 1, lwd = 8)
-    points(est, 1:(k+1), col = colest, pch = "|", cex = 1.5)
+    abline(h = 2.5:(max_display+.5), col = "lightgray", lty = 2)
+    segments(L99, 1:(max_display+1), U99, 1:(max_display+1), col = col99, lty = 1, lwd = 4)
+    segments(L95, 1:(max_display+1), U95, 1:(max_display+1), col = col95, lty = 1, lwd = 6)
+    segments(L68, 1:(max_display+1), U68, 1:(max_display+1), col = col68, lty = 1, lwd = 8)
+    points(est, 1:(max_display + 1), col = colest, pch = "|", cex = 1.5)
   }
   disp_type <- ifelse(aic_c == TRUE & type == "AIC", "AICc", 
                       ifelse(type == "BIC", "BIC", "AIC"))
   message(paste("Type of information criteria used in MAP plot:", disp_type))
-  return(temp)
+  if(type == "AIC"){
+    pmp_order <- order(as.numeric(as.character(temp[-c(1,2),2])), decreasing = T)
+    temp_sub <- temp[-c(1,2),]
+    temp_ord <- temp_sub[pmp_order, ]
+    temp[3:nrow(temp), ] <- temp_ord
+    return(temp[1:(max_display+2), ])
+  } else {
+    pmp_order <- order(as.numeric(as.character(temp[-c(1,2),3])), decreasing = T)
+    temp_sub <- temp[-c(1,2),]
+    temp_ord <- temp_sub[pmp_order, ]
+    temp[3:nrow(temp), ] <- temp_ord
+    return(temp[1:(max_display+2), ])
+  }
 }
-
 
 #' @title Model Averaged Posteriors Plot
 #' @description Works with results from information theoretic approximations to
