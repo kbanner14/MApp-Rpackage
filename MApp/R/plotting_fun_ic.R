@@ -224,7 +224,7 @@ MApp_IC <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
 #'   columns for specifying the partition of the plotting window.
 #' @return The \code{MApp} plot.
 
-MApp_IC_large <- function(x_coef, x_se, pmp, inmat, var_names = NULL,
+MApp_IC_gen <- function(x_coef, x_se, pmp, inmat, var_names = NULL,
                     mod_names = NULL, plot_wind = NULL){
   # assuming x is a matrix of estimates and standard errors
   # from each individual model (row) and the model averaged
