@@ -1,6 +1,6 @@
 # `{MAPP}`
 
-The `{MAPP}` package provides plotting functions to help researchers disect and understand common inferences drawn from model averaging partial regression coefficients. There are five major plotting functions:  
+The `{MAPP}` package provides plotting functions to help researchers dissect and understand common inferences drawn from model averaging partial regression coefficients. There are five major plotting functions:  
 
 - `MApp_bms` works with `bma` objects obtained from the `bms()` function in the `BMS` package (details about the `bms()` function can be found in the `BMS` tutorial [here](http://bms.zeugner.eu/tutorials/bms.pdf)). Returns the MAP plot and a table of posterior standard deviations.
 - `MApp_IC` works with a data frame and conducts AIC, AICc, or BIC based model averaging for all-subsets regression. Returns the MAP plot and Model averaged results. 
@@ -10,7 +10,7 @@ The `{MAPP}` package provides plotting functions to help researchers disect and 
 
 # Load `{MAPP}` 
 
-`MAPP` is not currently availble on CRAN, so it must be installed from GitHub or loaded from your local disk. The package, `devtools` is necessary for both installs. To install `devtools`, run `install.packages("devtools")`.  
+`MAPP` is not currently available on CRAN, so it must be installed from GitHub or loaded from your local disk. The package, `devtools` is necessary for both installs. To install `devtools`, run `install.packages("devtools")`.  
 
 ## GitHub Install
 1. Install the latest version of `{MAPP}` from GitHub. 
