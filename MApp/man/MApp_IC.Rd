@@ -6,7 +6,7 @@
 \usage{
 MApp_IC(x, plot_wind, type = "BIC", aic_c = TRUE, w_plus = FALSE,
   var_names = NULL, mod_names = NULL, family = "gaussian",
-  mod_prior = NULL)
+  mod_prior = NULL, max_display = NULL)
 }
 \arguments{
 \item{x}{A data frame with the response variable in the first column 

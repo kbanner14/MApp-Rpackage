@@ -15,7 +15,10 @@ columns to partition the plotting window into.}
 
 \item{max_display}{An integer specifying the number of models to display in
 the plotting window. Can also take on the argument \code{"common3"} to show the
-top PMP model, the full model, and the model averaged distribution.}
+top PMP model, the full model, and the model averaged distribution. If left 
+blank, the MAP plot will display posterior distributions from the 20 models
+with largest 
+posterior model probabilities.}
 
 \item{mod_names}{A vector specifying the names of the models. If left blank,
 models will be named \eqn{M_1, M_2,..., M_J}, where \eqn{M_1} will have the
@@ -32,13 +35,12 @@ The \code{MApp_bms} plot and a table of posterior standard deviations
 }
 \description{
 For \code{bma} objects obtained using the \code{bms} function in
-  the \code{BMS} package. Creates a graphical display showing all relevant
-  output from the model averaging procedure. Used to graphically compare
-  posterior distributions of partial regression coefficients from individual
-  models in the model set to the posterior distributions resulting from the
-  model averaged partial regression coefficients. Also used to compare
-  posterior standard deviations of the continuous piece of the model averaged
-  distribution to corresponding standard deviations from individual posterior
-  distributions in tabular form.
+  the \code{BMS} package. Creates the model averaged posteriors plot, displaying 
+  posteriors of regression coefficients from individual models along with the 
+  corresponding model averaged posteriors. Used to visually display the components 
+  of model averaged partial regression coefficients and assess appropriateness of 
+  drawing inference from them. Also provides a table of
+  posterior standard deviations for the model averaged
+  distribution and the distributions from individual models.
 }
 
