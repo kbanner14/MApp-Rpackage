@@ -31,23 +31,26 @@ MApp_list <- function(mcmc_list, plot_wind, max_display = NULL,
         mod_names <- paste("M", seq(1:K), sep = "")
     names(mcmc_list) <- paste("M", seq(1:K), sep = "")  
     # Create names for models
-    num_draws <- dim(mcmc_list[[1]])[1]  
-    # draws from each posterior beta vector
     var_names <- names(mcmc_list[[1]])
-    
-    # pmps are proportional to the number of samples per model
-    samps_mod <- sapply(mcmc_list, function(x){dim(x)[1]})
-    pmps <- samps_mod/sum(samps_mod)
 
     # Create a data frame for each coefficient estimate 
     # and track which model it came from
-
+    
+    draws_mod <- sapply(mcmc_list, function(x){ dim(x)[1]})
+    pmps <- draws_mod/sum(draws_mod)
+    
+    all_draws <- do.call(rbind, mcmc_list)
+    mod_vec <- character()
+    for(i in 1:length(mod_names)){
+      vec <- rep(mod_names[i], draws_mod[i])
+      mod_vec <- c(mod_vec, vec)
+    }
+    all_draws$Model <- factor(mod_vec)
     coef_frames <- list(1:p)
-
+    
     for (i in 1:p) {
-        coef_frames[[i]] <- vec_fun(mcmc_list, i)
-        coef_frames[[i]] <- data.frame(coef_frames[[i]], 
-                                       rep(mod_names, each = num_draws))
+      
+      coef_frames[[i]] <- data.frame(all_draws[,i], all_draws[,"Model"])
         names(coef_frames[[i]]) <- c("Post.Vec", "Model")
         coef_frames[[i]]$Model <- factor(coef_frames[[i]]$Model, levels = mod_names)
     }
