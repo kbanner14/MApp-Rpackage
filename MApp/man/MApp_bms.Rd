@@ -13,6 +13,11 @@ MApp_bms(x, plot_wind, num_sims = 1000, max_display = NULL,
 \item{plot_wind}{A vector of length 2 specifying the number of rows and
 columns to partition the plotting window into.}
 
+\item{num_sims}{the number of Monte Carlo samples to generate from each individual 
+posterior distribution for each partial regression coefficient of interest. 
+This will also be the number of observations in the model averaged posterior 
+distribution. Default is 1000.}
+
 \item{max_display}{An integer specifying the number of models to display in
 the plotting window. Can also take on the argument \code{"common3"} to show the
 top PMP model, the full model, and the model averaged distribution. If left 
