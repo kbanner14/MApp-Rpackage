@@ -47,7 +47,7 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
   inmat <- post.means
   inmat[inmat != 0] <- 1
   inmat <- t(inmat)
-  weights_raw <- sort(pmp.bma(x)[,1], decreasing = T)
+  weights_raw <- sort(BMS::pmp.bma(x)[,1], decreasing = T)
 
   tot_w <- sum(weights_raw)
 
