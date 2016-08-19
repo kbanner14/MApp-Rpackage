@@ -11,7 +11,7 @@ Description: A summary plot for model averaging of partial regression
     This function currently works with output from the bms() function in the {BMS}
     package, lists and/or matrices of draws from self-coded MCMC samplers, and
     results from information theoretic based approximations to posterior model
-    weights.
+    weights. The MApp-tutorial can be accessed here: http://rpubs.com/kbanner14/203078
 Depends:
     R (>= 3.1.2)
 License: MIT
