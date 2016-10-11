@@ -67,7 +67,8 @@ MApp_IC <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
     pmp <- as.numeric(as.character(temp[-c(1,2),2]))
     pip <- t(inmat)%*%pmp
     pep <- 1-pip
-    pep_text <- ifelse(pep == 0, "<0.0000", as.character(pep))
+    pep <- round(pep, 3)
+    pep_text <- ifelse(pep == 0, expression(" "%~~%0), as.character(pep))
     # sort by pmp 
     x_coef <- temp[-2, c(7:(6+p))]
     x_mods <- cbind(pmp, x_coef[2:nrow(x_coef),])
@@ -95,7 +96,8 @@ MApp_IC <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
     pmp <- as.numeric(as.character(temp[-c(1,2),3]))
     pip <- t(inmat)%*%pmp
     pep <- 1-pip
-    pep_text <- ifelse(pep == 0, "<0.0000", as.character(round(pep, 4)))
+    pep <- round(pep, 3)
+    pep_text <- ifelse(pep == 0, expression(" "%~~%0), as.character(pep))
     
     x_coef <- temp[-1, c(7:(6+p))]
     # sort by pmp 
@@ -158,12 +160,17 @@ MApp_IC <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
     axis(2, at = 2:(max_display+1), labels = mod_names[2:(max_display+1)], tick = T,
          col.axis = col99[2])
     
-    pmp_disp <- round(pmp[order(pmp, decreasing = T)], 4)
-    pmp_disp <- ifelse(pmp_disp == 0, "<0.0000", as.character(pmp_disp))
+    pmp_disp <- round(pmp[order(pmp, decreasing = T)], 3)
+    pmp_disp <- ifelse(pmp_disp == 0,expression(" "%~~%0), as.character(pmp_disp))
     text(min(L99)+ sd(L99)/5, 2:(max_display+1), pmp_disp[1:max_display], pos = 3)
     middle <- median(c(min(L99), max(U99)))
-    text(middle, 1.1, bquote("Pr("~beta[.(i)~", MA"]~"= 0 | y ) ="~.(pep_text[i])),
-         col = "#e31a1c", pos = 3)
+    if (as.character(pep_text[i]) == "\" \" %~~% 0"){
+      text(middle, 1.1, bquote("Pr("~beta[.(i)~", MA"]~"= 0 | y ) ="~""%~~%0),
+           col = "#e31a1c", pos = 3)
+    } else {
+      text(middle, 1.1, bquote("Pr("~beta[.(i)~", MA"]~"= 0 | y ) ="~.(as.character(pep_text[i]))),
+           col = "#e31a1c", pos = 3)
+    }
     
     L68[L68 == 0] <- NA
     U68[U68 == 0] <- NA
@@ -235,7 +242,7 @@ MApp_IC_gen <- function(x_coef, x_se, pmp, inmat, var_names = NULL,
   pip <- t(inmat)%*%pmp
   pep <- round(1-pip, 4)
   pmp <- round(as.numeric(as.character(pmp)), 4)
-  pep_text <- ifelse(pep == 0, "<0.0000", as.character(pep))
+  pep_text <- ifelse(pep == 0, expression(" "%~~%0), as.character(pep))
   
   if ( is.null(mod_names) ) {
     mod_names <- c("MA",paste0("M", 1:k))
@@ -273,11 +280,16 @@ MApp_IC_gen <- function(x_coef, x_se, pmp, inmat, var_names = NULL,
     axis(2, at = 2:(k+1), labels = mod_names[2:(k+1)], tick = T,
          col.axis = col99[2])
     
-    pmp_disp <- ifelse(pmp == 0, "<0.0000", as.character(pmp))
+    pmp_disp <- ifelse(pmp == 0, expression(" "%~~%0), as.character(pmp))
     text(min(L99)+ sd(L99)/5, 2:(k+1), pmp_disp, pos = 3)
     middle <- median(c(min(L99), max(U99)))
-    text(middle, 1.1, paste0("Pr(beta_", i, ".MA = 0|y)= ",pep_text[i]),
-         col = "#e31a1c", pos = 3)
+    if (as.character(pep_text[i]) == "\" \" %~~% 0"){
+      text(middle, 1.1, bquote("Pr("~beta[.(i)~", MA"]~"= 0 | y ) ="~""%~~%0),
+           col = "#e31a1c", pos = 3)
+    } else {
+      text(middle, 1.1, bquote("Pr("~beta[.(i)~", MA"]~"= 0 | y ) ="~.(as.character(pep_text[i]))),
+           col = "#e31a1c", pos = 3)
+    }
     
     L68[L68 == 0] <- NA
     U68[U68 == 0] <- NA
