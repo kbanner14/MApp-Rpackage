@@ -292,7 +292,7 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
     } else {
       text(mean(MaxMin[i, ]),
            vadjust,
-           bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y ) ="~.(as.character(disp.PEP[include_coef[1]]))), 
+           bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y ) ="~.(as.character(disp.PEP[i]))), 
            col = "black",
            cex = 1,
            pos = 3)
