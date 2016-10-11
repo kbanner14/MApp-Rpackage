@@ -165,7 +165,8 @@ MApp_list <- function(mcmc_list, plot_wind, max_display = NULL,
       sum(is.na(subset(x, Model == "MA")$Post.Vec))/dim(subset(x, Model == "MA"))[1]}
 )
     disp.PEP <- round(PEP, 3)
-    disp.PEP <- ifelse(disp.PEP == 0, "<0.000", as.character(disp.PEP))
+    disp.PEP <- ifelse(disp.PEP == 0, expression(" "%~~%0), 
+                       as.character(disp.PEP))
     # make vertical adjust for larger plots
     vadjust <- ifelse(max_display <= 8, 0.35, 0.05)
     
@@ -222,7 +223,8 @@ MApp_list <- function(mcmc_list, plot_wind, max_display = NULL,
       
       # Add model weights. display 0.000 for ~0's to convey rounding
       disp.weights <- round(pmps[1:max_display], 3)
-      disp.weights <- ifelse(disp.weights == 0, "< 0.000", as.character(disp.weights))
+      disp.weights <- ifelse(disp.weights == 0, expression(" "%~~%0), 
+                             as.character(disp.weights))
       
       # Add text to the plot
       text(rep(MaxMin[i, 1], max_display + 1),
@@ -233,17 +235,17 @@ MApp_list <- function(mcmc_list, plot_wind, max_display = NULL,
            pos = 1)
       
       # Add PEP's
-      if (disp.PEP[i] == "< 0.000") {
+      if (as.character(disp.PEP[i]) == "\" \" %~~% 0") {
         text(mean(MaxMin[i, ]),
              vadjust,
-             bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y )"~.(disp.PEP[i])), 
+             bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y )"~""%~~%0), 
              col = "black",
              cex = 1,
              pos = 3)
       } else {
         text(mean(MaxMin[i, ]),
              vadjust,
-             bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y ) ="~.(disp.PEP[i])), 
+             bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y ) = "~.(as.character(disp.PEP[i]))), 
              col = "black",
              cex = 1,
              pos = 3)

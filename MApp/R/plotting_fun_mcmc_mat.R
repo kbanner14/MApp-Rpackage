@@ -206,7 +206,8 @@ MApp_MCMC <- function(mcmc_draws, plot_wind,
     
     # Add model weights. display 0.000 for ~0's to convey rounding
     disp.weights <- round(weights[1:max_display], 3)
-    disp.weights <- ifelse(disp.weights == 0, "< 0.000", as.character(disp.weights))
+    disp.weights <- ifelse(disp.weights == 0, expression(" "%~~%0), 
+                           as.character(disp.weights))
     
     # Add text to the plot
     text(rep(MaxMin[i, 1], max_display + 1),
@@ -218,20 +219,24 @@ MApp_MCMC <- function(mcmc_draws, plot_wind,
     
     # Add and make sure PIP's are not rounded to exactly 0.
     disp.PEP <- round(1 - PIP, 3)
-    disp.PEP <- ifelse(disp.PEP == 0, "<0.000", as.character(disp.PEP))
+    disp.PEP <- ifelse(disp.PEP == 0,  expression(" "%~~%0), 
+                       as.character(disp.PEP))
     vadjust <- ifelse(max_display <= 10, 0.35, 0)
+    if (as.character(disp.PEP[i]) == "\" \" %~~% 0") { 
     text(mean(MaxMin[i, ]),
          vadjust,
-         paste("Pr(beta_",
-               paste(include_beans[i],
-                     paste(".MA = 0",
-                           paste("|y)",
-                                 disp.PEP[i],
-                                 sep = "="))),
-               sep = ""),
+         bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y )"~""%~~%0),
          col = "black",
          cex = 1,
-         pos = 3)
+         pos = 3) 
+    } else {
+      text(mean(MaxMin[i, ]),
+           vadjust,
+           bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y ) ="~.(as.character(disp.PEP[i]))),
+           col = "black",
+           cex = 1,
+           pos = 3) 
+    }
     text(MaxMin[i, 2], (max_display + 1.5),
          paste("Sum PMP", round(sum(weights), 3),
                sep = "="),
