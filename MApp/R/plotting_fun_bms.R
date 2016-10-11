@@ -210,7 +210,10 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
   dimnames(SD)[[1]] <- c(var_names[include_coef], "PMP")
   # Add and make sure PIP's are not rounded to exactly 0.
   disp.PEP <- round(1 - PIP, 3)
-  disp.PEP <- ifelse(disp.PEP == 0, "<0.000", as.character(disp.PEP))
+  disp.PEP <- ifelse(disp.PEP == 0, expression(" "%~~%0), 
+                     as.character(disp.PEP))
+  disp.PEP.test <- as.character(disp.PEP)
+  
   # make vertical adjust for larger plots
   vadjust <- ifelse(max_display <= 8, 0.35, 0.05)
   
@@ -267,8 +270,9 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
 
     # Add model weights. display 0.000 for ~0's to convey rounding
     disp.weights <- round(weights_raw[1:max_display], 3)
-    disp.weights <- ifelse(disp.weights == 0, "< 0.000", as.character(disp.weights))
-
+    disp.weights <- ifelse(disp.weights == 0, expression(" "%~~%0), 
+                           as.character(disp.weights))
+    
     # Add text to the plot
     text(rep(MaxMin[i, 1], max_display + 1),
          c(1:(max_display + 1) + 0.25),
@@ -278,17 +282,17 @@ MApp_bms <- function(x, plot_wind, num_sims = 1000,
          pos = 1)
 
     # Add PEP's
-    if (disp.PEP[i] == "< 0.000") {
+    if (disp.PEP.test[i] == "\" \" %~~% 0") {
       text(mean(MaxMin[i, ]),
            vadjust,
-           bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y )"~.(disp.PEP[i])), 
+           bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y )"~""%~~% 0), 
            col = "black",
            cex = 1,
            pos = 3)
     } else {
       text(mean(MaxMin[i, ]),
            vadjust,
-           bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y ) ="~.(disp.PEP[i])), 
+           bquote("Pr("~beta[.(include_beans[i])~", MA"]~"= 0 | y ) ="~.(as.character(disp.PEP[include_coef[1]]))), 
            col = "black",
            cex = 1,
            pos = 3)
