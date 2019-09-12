@@ -115,7 +115,7 @@ se_MA <- function(weights, coef_mat, se_mat, inmat, w_plus = FALSE){
     }
   } else {
     dev_mat <- (coef_mat - ests_mat)^2
-    out <- weights%*%sqrt(var_mat + dev_mat)
+    out <- t(as.matrix(weights))%*%as.matrix(sqrt(var_mat + dev_mat))
     }
   
   return(out)
