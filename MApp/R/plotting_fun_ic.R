@@ -72,12 +72,12 @@ MApp_IC <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
     # sort by pmp 
     x_coef <- temp[-2, c(7:(6+p))]
     x_mods <- cbind(pmp, x_coef[2:nrow(x_coef),])
-    x_mods <- x_mods[,2:ncol(x_mods)]
+    x_mods <- x_mods[order(pmp, decreasing = T), 2:ncol(x_mods)]
     x_coef[2:nrow(x_coef),] <- x_mods
     x_se <- temp[-2,c((8+p):ncol(temp))]
     # sort by pmp
     x_mse <- cbind(pmp, x_se[2:nrow(x_se),])
-    x_mse <- x_mse[,2:ncol(x_mse)]
+    x_mse <- x_mse[order(pmp, decreasing = T), 2:ncol(x_mse)]
     x_se[2:nrow(x_se),] <- x_mse
     if(is.null(max_display) & nrow(x_coef) > 20){
       x_coef <- x_coef[1:21, ]
@@ -102,12 +102,12 @@ MApp_IC <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
     x_coef <- temp[-1, c(7:(6+p))]
     # sort by pmp 
     x_mods <- cbind(pmp, x_coef[2:nrow(x_coef),])
-    x_mods <- x_mods[,2:ncol(x_mods)]
+    x_mods <- x_mods[order(pmp, decreasing = T), 2:ncol(x_mods)]
     x_coef[2:nrow(x_coef),] <- x_mods
     x_se <- temp[-1,c((8+p):ncol(temp))]
     # sort by pmp
     x_mse <- cbind(pmp, x_se[2:nrow(x_se),])
-    x_mse <- x_mse[,2:ncol(x_mse)]
+    x_mse <- x_mse[order(pmp, decreasing = T), 2:ncol(x_mse)]
     x_se[2:nrow(x_se),] <- x_mse
     if(is.null(max_display) & nrow(x_coef) > 20){
       x_coef <- x_coef[1:21, ]
@@ -281,12 +281,12 @@ MApp_IC_dark <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
     # sort by pmp 
     x_coef <- temp[-2, c(7:(6+p))]
     x_mods <- cbind(pmp, x_coef[2:nrow(x_coef),])
-    x_mods <- x_mods[,2:ncol(x_mods)]
+    x_mods <- x_mods[order(pmp, decreasing = T), 2:ncol(x_mods)]
     x_coef[2:nrow(x_coef),] <- x_mods
     x_se <- temp[-2,c((8+p):ncol(temp))]
     # sort by pmp
     x_mse <- cbind(pmp, x_se[2:nrow(x_se),])
-    x_mse <- x_mse[,2:ncol(x_mse)]
+    x_mse <- x_mse[order(pmp, decreasing = T), 2:ncol(x_mse)]
     x_se[2:nrow(x_se),] <- x_mse
     if(is.null(max_display) & nrow(x_coef) > 20){
       x_coef <- x_coef[1:21, ]
@@ -311,12 +311,12 @@ MApp_IC_dark <- function(x, plot_wind, type = "BIC", aic_c = TRUE,
     x_coef <- temp[-1, c(7:(6+p))]
     # sort by pmp 
     x_mods <- cbind(pmp, x_coef[2:nrow(x_coef),])
-    x_mods <- x_mods[,2:ncol(x_mods)]
+    x_mods <- x_mods[order(pmp, decreasing = T),2:ncol(x_mods)]
     x_coef[2:nrow(x_coef),] <- x_mods
     x_se <- temp[-1,c((8+p):ncol(temp))]
     # sort by pmp
     x_mse <- cbind(pmp, x_se[2:nrow(x_se),])
-    x_mse <- x_mse[,2:ncol(x_mse)]
+    x_mse <- x_mse[order(pmp, decreasing = T),2:ncol(x_mse)]
     x_se[2:nrow(x_se),] <- x_mse
     if(is.null(max_display) & nrow(x_coef) > 20){
       x_coef <- x_coef[1:21, ]
