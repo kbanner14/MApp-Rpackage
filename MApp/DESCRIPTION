@@ -15,6 +15,7 @@ Description: A summary plot for model averaging of partial regression
 Depends:
     R (>= 3.1.2)
 License: MIT
+Encoding: UTF-8
 LazyData: true
 Imports:
     beanplot,
